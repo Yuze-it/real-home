@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面未找到 - YUZE-IT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff9a9e;
+            --accent-color: #a0d9f6;
+            --secondary-color: #f5c3d8;
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --card-bg: rgba(255,255,255,0.95);
+            --text-color: #4a4a4a;
+            --text-light: #7f8c8d;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        body {
+            font-family: 'Poppins', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f7 0%, #e6f0f5 100%);
+            color: var(--text-color);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .top-nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-family: 'Poppins', 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .logo img {
+            margin-right: 0.5rem;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin-left: 2rem;
+        }
+        .nav-links li {
+            margin: 0 1rem;
+        }
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.2rem 0.8rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition), transform var(--transition);
+        }
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+        .main-404 {
+            max-width: 600px;
+            margin: 5rem auto 0 auto;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .main-404 h1 {
+            font-size: 5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+        .main-404 h2 {
+            font-size: 2rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+        .main-404 p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .main-404 .back-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .main-404 .back-btn:hover {
+            box-shadow: 0 4px 12px rgba(93, 156, 236, 0.3);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .main-404 {
+                padding: 2rem 1rem;
+            }
+            .main-404 h1 {
+                font-size: 3rem;
+            }
+            .main-404 h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="https://yuze.netlify.app/home/img/66f025c10699e.png" width="50" height="50" alt="logo">
+                YUZE-IT
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="blog/blog.html"><i class="fas fa-blog"></i> 博客</a></li>
+                <li><a href="about.html"><i class="fas fa-user"></i> 简介</a></li>
+                <li><a href="stats.html"><i class="fas fa-chart-bar"></i> 数据</a></li>
+                <li><a href="ai.html"><i class="fas fa-robot"></i> AI助手</a></li>
+                <li><a href="links.html"><i class="fas fa-link"></i> 友链</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="main-404">
+        <h1>404</h1>
+        <h2>页面未找到</h2>
+        <p>很抱歉，您访问的页面不存在或已被移除。<br>请检查网址或返回主页。</p>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 返回首页</a>
+    </div>
+</body>
+</html>

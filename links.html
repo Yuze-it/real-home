@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>友情链接 - Yuze's Digital Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff7eb3; /* 更鲜艳的粉色 */
+            --accent-color: #5bc0de;  /* 更鲜明的蓝色 */
+            --secondary-color: #f8b8d0;
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --text-color: #4a4a4a;
+            --text-light: #7f8c8d;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --card-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --gradient-bg: linear-gradient(135deg, #fff5f7 0%, #e3f2fd 100%);
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --category-oi: #9b59b6;
+            --category-edu: #2ecc71;
+            --category-tech: #3498db;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            background: var(--gradient-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏样式 */
+        .top-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .nav-links li {
+            margin: 0 0.8rem;
+            position: relative;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 1.2rem 0.8rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .links-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .links-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+        }
+
+        .links-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .category-tab {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            border: 2px solid transparent;
+        }
+
+        .category-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .category-tab.active {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+
+        .category-tab[data-category="oi"] {
+            color: var(--category-oi);
+        }
+
+        .category-tab[data-category="edu"] {
+            color: var(--category-edu);
+        }
+
+        .category-tab[data-category="tech"] {
+            color: var(--category-tech);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.8rem;
+            margin: 2.5rem 0;
+        }
+
+        .link-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.8rem;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .link-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .link-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .link-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .link-title {
+            font-size: 1.4rem;
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .link-url {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .link-url:hover {
+            text-decoration: underline;
+        }
+
+        .link-description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .link-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .link-category {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .link-category.oi {
+            background: rgba(155, 89, 182, 0.1);
+            color: var(--category-oi);
+        }
+
+        .link-category.edu {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--category-edu);
+        }
+
+        .link-category.tech {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--category-tech);
+        }
+
+        .link-button {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--primary-color);
+            margin: 2rem 0 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .section-title i {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .search-box {
+            display: flex;
+            max-width: 500px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            bottom: 5px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .search-button:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 3rem;
+        }
+
+        .footer-heart {
+            color: #e74c3c;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0 0.5rem;
+            }
+
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .links-card {
+                padding: 1.8rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="blog/blog.html"><i class="fas fa-blog"></i> 博客</a></li>
+                <li><a href="about.html"><i class="fas fa-user"></i> 简介</a></li>
+                <li><a href="stats.html"><i class="fas fa-chart-bar"></i> 数据</a></li>
+                <li><a href="ai.html"><i class="fas fa-robot"></i> AI助手</a></li>
+                <li><a href="links.html" class="active"><i class="fas fa-link"></i> 友链</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header animate-fadeIn">
+            <h1 class="page-title">友情链接</h1>
+            <p class="page-subtitle">与志同道合的朋友们相互连接，分享知识与灵感</p>
+        </div>
+
+        <div class="links-card animate-fadeIn delay-1">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="搜索友链..." id="linkSearch">
+                <button class="search-button">搜索</button>
+            </div>
+
+            <div class="category-tabs">
+                <div class="category-tab active" data-category="all">全部</div>
+                <div class="category-tab" data-category="oi">OI/编程</div>
+                <div class="category-tab" data-category="edu">教育平台</div>
+            </div>
+
+            <h2 class="section-title"><i class="fas fa-code"></i> OI/编程相关</h2>
+            <div class="links-grid">
+                <div class="link-item" data-category="oi">
+                    <div class="link-header">
+                        <img src="https://www.luogu.com.cn/favicon.ico" alt="洛谷" class="link-avatar" onerror="this.src='https://via.placeholder.com/50'">
+                        <h3 class="link-title">洛谷</h3>
+                    </div>
+                    <a href="https://www.luogu.com.cn/" target="_blank" class="link-url">https://www.luogu.com.cn/</a>
+                    <p class="link-description">专业的信息学竞赛在线评测和学习平台，提供大量题库、比赛和社区讨论功能，是OIer必备的学习资源站。</p>
+                    <div class="link-footer">
+                        <span class="link-category oi">OI/编程</span>
+                        <a href="https://www.luogu.com.cn/" target="_blank" class="link-button">访问网站</a>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title"><i class="fas fa-graduation-cap"></i> 教育平台</h2>
+            <div class="links-grid">
+                <div class="link-item" data-category="edu">
+                    <div class="link-header">
+                        <img src="https://ke.kuding.cn/static/img/codingtang.8885143.png" alt="酷丁编程" class="link-avatar" onerror="this.src='https://via.placeholder.com/50'">
+                        <h3 class="link-title">酷丁编程</h3>
+                    </div>
+                    <a href="https://kuding.cn/" target="_blank" class="link-url">https://kuding.cn/</a>
+                    <p class="link-description">专注于青少年编程教育的在线学习平台，提供Python、C++等编程课程，帮助青少年培养计算思维和创新能力。</p>
+                    <div class="link-footer">
+                        <span class="link-category edu">教育平台</span>
+                        <a href="https://kuding.cn/" target="_blank" class="link-button">访问网站</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <p style="color: var(--text-light);">想要交换友链？欢迎 <a href="mailto:yuze-it@outlook.com" style="color: var(--accent-color);">联系我</a></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🚀 持续升级中的蒟蒻OIer | 📧 yuze-it@outlook.com</p>
+        <p>© 2025 Yuze's Digital Playground | 用<span class="footer-heart">❤</span>创造美好</p>
+    </footer>
+
+    <script>
+        // 添加AI聊天切换功能
+        function toggleAIChat() {
+            // AI聊天面板切换逻辑
+            alert('AI助手功能将在此处实现');
+        }
+
+        // 分类筛选功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            const linkItems = document.querySelectorAll('.link-item');
+            
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    // 添加active类到当前选项卡
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    
+                    // 筛选项目
+                    linkItems.forEach(item => {
+                        if (category === 'all' || item.getAttribute('data-category') === category) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // 搜索功能
+            const searchInput = document.getElementById('linkSearch');
+            searchInput.addEventListener('keyup', function() {
+                const searchText = this.value.toLowerCase();
+                
+                linkItems.forEach(item => {
+                    const title = item.querySelector('.link-title').textContent.toLowerCase();
+                    const description = item.querySelector('.link-description').textContent.toLowerCase();
+                    const url = item.querySelector('.link-url').textContent.toLowerCase();
+                    
+                    if (title.includes(searchText) || description.includes(searchText) || url.includes(searchText)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

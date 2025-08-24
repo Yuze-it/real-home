@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown</title>
+<link rel="stylesheet" href="editor.md/css/editormd.min.css">
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script> 
+<script src="editor.md/lib/marked.min.js"></script>
+<script src="editor.md/lib/prettify.min.js"></script>
+<script src="editor.md/editormd.js"></script>
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background-image: url('background.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+</style>
+</head>
+<body>
+<div id="editor" style="width: 80%; height: 80%; margin: auto; opacity: 0.8;"></div>
+<script>
+    var editor = editormd("editor", {
+        // 这里的尺寸必须在这里设置，设置样式会被 editormd 自动覆盖
+        width: "100%",
+        // 设置高度
+        height: "500px",
+        // 编辑器中初始内容
+        markdown: "# 开始使用YUZE-IT的markdown编辑器",
+        // 指定插件路径
+        path: "editor.md/lib/"
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuze's Digital Playground</title>
+<style>
+:root {
+    --primary-color: #ff9a9e; /* 淡粉色 */
+    --accent-color: #a0d9f6;  /* 淡蓝色 */
+    --secondary-color: #f5c3d8;
+    --light-color: #f8f9fa;
+    --dark-color: #2c3e50;
+    --success-color: #48cfad;
+    --warning-color: #ffaa85;
+    --danger-color: #ed5565;
+    --code-bg: #f0f4f8;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-color: #4a4a4a;
+    --text-light: #7f8c8d;
+    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #fff5f7 0%, #e6f0f5 100%); /* 淡粉到淡蓝的渐变背景 */
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+/* 顶部导航栏样式 */
+.top-nav {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    justify-content: center;
+}
+
+.nav-links li {
+    margin: 0 1rem;
+    position: relative;
+}
+
+.nav-links a {
+    display: block;
+    padding: 1.2rem 0.8rem;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition), transform var(--transition);
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
+header {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    margin: 2rem auto;
+    position: relative;
+    overflow: hidden;
+    max-width: 1400px;
+}
+
+header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: rotate(30deg);
+    z-index: 0;
+}
+
+header * {
+    position: relative;
+    z-index: 1;
+}
+
+.basketball {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.5s infinite ease-in-out;
+    box-shadow: 0 4px 12px rgba(255, 154, 158, 0.4);
+    border: 2px solid white;
+}
+
+h1, h2, h3, h4 {
+    font-weight: 700;
+    margin-top: 0;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, white, #f8f9fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.container {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.main-content {
+    flex: 4;
+    min-width: 0;
+}
+
+.sidebar {
+    flex: 1;
+    min-width: 300px;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.project-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-decoration: none;
+    color: inherit;
+    font-size: 1rem;
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+}
+
+.project-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(93, 156, 236, 0.05), rgba(160, 217, 246, 0.05));
+    z-index: -1;
+}
+
+.project-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.project-card p {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.project-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: transform 0.2s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    border-color: rgba(93, 156, 236, 0.2);
+}
+
+.project-card:hover .project-link {
+    transform: translateX(4px);
+}
+
+.sidebar-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(8px);
+    transition: transform 0.3s ease;
+}
+
+.sidebar-card:hover {
+    transform: translateY(-5px);
+}
+
+.contact-info {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-info li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.1);
+}
+
+.contact-info li:last-child {
+    border-bottom: none;
+}
+
+.contact-info a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.contact-info a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+.visitor-counter {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    margin: 0.5rem 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.achievement-timeline {
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 20px;
+    margin: 2rem 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(8px);
+}
+
+.achievement-timeline h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.achievement-timeline ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.achievement-timeline li {
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.1);
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.achievement-timeline li:last-child {
+    border-bottom: none;
+}
+
+.achievement-timeline li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.2rem;
+    width: 8px;
+    height: 8px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.code-block {
+    background: var(--code-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    white-space: pre-wrap;
+    color: var(--dark-color);
+    line-height: 1.6;
+    overflow-x: auto;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.oi-tips {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 20px;
+    border-left: 6px solid var(--primary-color);
+    margin: 2rem 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(8px);
+}
+
+.oi-tips h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+
+.ai-message.bot {
+    text-align: left;
+}
+
+.ai-message.bot p {
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    display: inline-block;
+    max-width: 90%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.ai-input-area {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    background: white;
+}
+
+.ai-input-area textarea {
+    width: 100%;
+    height: 80px;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    resize: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.ai-input-area textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(93, 156, 236, 0.2);
+}
+
+.gradient-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    margin-top: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.gradient-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 156, 236, 0.3);
+}
+
+.gradient-btn:active {
+    transform: translateY(0);
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.8em;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+}
+
+.loading-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.loading-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-top: 2rem;
+}
+
+footer p {
+    margin: 0.5rem 0;
+}
+
+/* 时钟样式 */
+#compact-clock {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-align: center;
+    margin: 1rem 0;
+}
+
+#compact-clock .date {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+}
+
+/* 访客统计样式 */
+.visitor-stats {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background: rgba(248, 249, 250, 0.7);
+    border-radius: 12px;
+}
+
+.stat-label {
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-value {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* 动画效果 */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+.logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50; /* 黑色 */
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        font-family: 'Poppins', 'Inter', sans-serif; /* 黑体字 */
+        white-space: nowrap; /* 防止换行 */
+}
+.logo img {
+    margin-right: 0.5rem;
+}
+.logo i {  
+    margin-right: 0.5rem;     
+    color: var(--secondary-color);
+}
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+    .sidebar {
+        order: -1;
+    }
+    .main-content,
+    .sidebar {
+        flex: 1;
+    }
+    
+    .ai-panel {
+        width: 90%;
+        right: 5%;
+        height: 70vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    header {
+        padding: 1.5rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .basketball {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;
+    }
+    
+    .nav-links li {
+        margin: 0 0.5rem;
+    }
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="//api.busuanzi.cc/static/3.6.9/busuanzi.min.js" defer></script>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+<nav class="top-nav">
+    <div class="nav-container">
+        <a href="../index.html" class="logo"><img src="https://yuze.netlify.app/home/img/66f025c10699e.png" width="45" height="45"></img>YUZE-IT</a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active"><i class="fas fa-home"></i> 首页</a></li>
+            <li><a href="blog/blog.html"><i class="fas fa-blog"></i> 博客</a></li>
+            <li><a href="about.html"><i class="fas fa-user"></i> 简介</a></li>
+            <li><a href="stats.html"><i class="fas fa-chart-bar"></i> 数据</a></li>
+            <li><a href="ai.html"><i class="fas fa-robot"></i> AI助手</a></li>
+            <li><a href="links.html"><i class="fas fa-link"></i> 友链</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <div class="container">
+        <div class="main-content">
+            <header>
+                <div class="basketball floating"></div>
+                <h1>Yuze's Digital Playground</h1>
+                <p>初一蒟蒻OIer | 篮球爱好者 | 全栈开发者</p>
+            </header>
+
+            <section class="project-grid">
+                <a href="/md" class="project-card" target="_blank" rel="noopener">
+                    <h3>📝 MD编辑器</h3>
+                    <p>实时Markdown编辑预览工具，支持语法高亮和导出功能</p>
+                    <p class="project-link">点击体验 →</p>
+                </a>
+                <a href="/ai" class="project-card" target="_blank" rel="noopener">
+                    <h3>🤖 AI实验室</h3>
+                    <p>探索人工智能的奇妙世界，体验前沿AI技术</p>
+                    <p class="project-link">点击体验 →</p>
+                </a>
+                <a href="/music" class="project-card" target="_blank">
+                    <h3>🎵 音乐播放器</h3>
+                    <p>在线音乐播放与歌单管理，支持多种音源</p>
+                    <p class="project-link">点击体验 →</p>
+                </a>
+                <a href="/%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2%E5%99%A8" class="project-card" target="_blank">
+                    <h3>🔢 进制转换器</h3>
+                    <p>支持2-36进制快速转换，程序员必备工具</p>
+                    <p class="project-link">点击体验 →</p>
+                </a>
+                <a href="/jishi" class="project-card" target="_blank">
+                    <h3>⏱️ 班级计时器</h3>
+                    <p>定制化课程时间管理工具，教学好帮手</p>
+                    <p class="project-link">点击体验 →</p>
+                </a>
+                <a href="/clock" class="project-card" target="_blank">
+                    <h3>🍅 番茄钟</h3>
+                    <p>高效时间管理工具，提升工作效率</p>
+                    <p class="project-link">点击体验 →</p>
+                </a>
+            </section>
+
+            <section class="achievement-timeline">
+                <h2>🏆 成就墙</h2>
+                <ul>
+                    <li>📅 2024年8月： 成功搭建个人第一个网站</li>
+                    <li>📜 2024年10月：CSP-J初赛一等奖</li>
+                    <li>💻 2024年11月：CSP-J复赛三等奖</li>
+                    <li>🏅 2024年11月：初中区赛一等奖 / 市赛三等奖</li>
+                    <li>📜 2025年5月： 初中省赛二等奖</li>
+                    <li>🏅 2025年9月：全国青少年信息素养大赛（复赛）一等（满分）</li>
+                </ul>
+                <p style="text-align:center;margin-top:1.5rem;font-style:italic;color:var(--primary-color)">"代码与篮球都需要精准的算法"</p>
+            </section>
+
+            <section class="oi-tips">
+                <h2>🔑 OIer生存指南</h2>
+                <div class="code-block">
+                    ·——暴力出奇迹，骗分过样例。数学先打表，ＤＰ看运气。  
+                    ·——穷举ＴＬＥ，递推ＵＫＥ。模拟ＭＬＥ，贪心还ＣＥ。  
+                    ·——想要骗到分，就要有方法。图论背模板，数论背公式。  
+                    ·——动规背方程，高精背代码。如果都没背，干脆输样例。
+                </div>
+            </section>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <h2>🚀 YUZE-IT</h2>
+                <p>专注于全栈开发与算法研究的个人技术品牌，致力于打造有趣实用的数字产品。</p>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>⏰ 实时时钟</h3>
+                <div id="compact-clock">
+                    <div class="time">加载中...</div>
+                    <div class="date"></div>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3><a href="/blog">📖 YUZE-IT个人BLOG</a></h3>   
+                <p>分享技术心得与生活感悟</p>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3><a href="https://zengzimo.netlify.app/">😊 友链：ZIMO-HUB</a></h3>   
+                <p>探索更多开发者伙伴的作品</p>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3>📬 联系我们</h3>
+                <ul class="contact-info">
+                    <li>📧 Email: yuze-it@outlook.com</li>
+                    <li>🐱 GitHub: <a href="https://github.com/yuze-it">yuze-it</a></li>
+                    <li>📖 洛谷: <a href="https://www.luogu.com.cn/user/1023108">1023108</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3>👀 访客统计</h3>
+                <div class="visitor-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">总访问量</span>
+                        <span id="busuanzi_site_pv" class="stat-value">加载中...</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">总访客数</span>
+                        <span id="busuanzi_site_uv" class="stat-value">加载中...</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">今日访问</span>
+                        <span id="busuanzi_today_site_pv" class="stat-value">加载中...</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">今日访客</span>
+                        <span id="busuanzi_today_site_uv" class="stat-value">加载中...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <footer>
+        <p>🚀 持续升级中的蒟蒻OIer | 📧 yuze-it@outlook.com</p>
+        <p>© 2025 Yuze's Digital Playground | 用代码创造美好</p>
+    </footer>
+
+    <script>
+        function makeMulti(fn) {
+            const str = fn.toString();
+            const start = str.indexOf("/*") + 2;
+            const end = str.lastIndexOf("*/");
+            return str.substring(start, end).trim();
+        }
+
+        let string = function () {
+/*   /$$     /$$ /$$   /$$ /$$$$$$$$ /$$$$$$$$
+|  $$   /$$/| $$  | $$|_____ $$ | $$_____/
+ \  $$ /$$/ | $$  | $$     /$$/ | $$      
+  \  $$$$/  | $$  | $$    /$$/  | $$$$$   
+   \  $$/   | $$  | $$   /$$/   | $$__/   
+    | $$    | $$  | $$  /$$/    | $$      
+    | $$    |  $$$$$$/ /$$$$$$$$| $$$$$$$$
+    |__/     \______/ |________/|________/       
+*/
+};
+
+        console.log(makeMulti(string));
+        console.log("%cYUZE-IT 技术工作室欢迎您~", "color: #5d9cec; font-weight: bold; font-size: 1.2rem;");
+        console.log('%c ', 'font-size: 1px; padding: 120px 220px; background: url(/wish.png) no-repeat; background-size: cover;');
+
+        // 初始化实时时钟
+        function updateCompactClock() {
+            const date = new Date();
+            const timeString = date.toLocaleTimeString('zh-CN', { hour12: false });
+            const dateString = date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                weekday: 'short'
+            });
+            document.querySelector('#compact-clock .time').textContent = timeString;
+            document.querySelector('#compact-clock .date').textContent = dateString;
+        }
+        setInterval(updateCompactClock, 1000);
+        updateCompactClock();
+
+
+
+        // 随机名言
+        const quotes = [
+            "「代码与篮球都需要精准的算法」",
+            "「每天进步1%，一年强大37倍」",
+            "「BUG是程序员最好的老师」",
+            "「编程是艺术与逻辑的完美结合」",
+            "「篮球场上需要策略，编程亦是如此」"
+        ];
+        
+        // 随机选择一句名言显示在成就墙
+        document.querySelector('.achievement-timeline p').textContent = 
+            quotes[Math.floor(Math.random() * quotes.length)];
+    </script>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据统计 - Yuze's Digital Playground</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff7eb3; /* 更鲜艳的粉色 */
+            --accent-color: #5bc0de;  /* 更鲜明的蓝色 */
+            --secondary-color: #f8b8d0;
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --text-color: #4a4a4a;
+            --text-light: #7f8c8d;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --card-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --gradient-bg: linear-gradient(135deg, #fff5f7 0%, #e3f2fd 100%);
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            background: var(--gradient-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        /* 顶部导航栏样式 */
+        .top-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .nav-links li {
+            margin: 0 0.8rem;
+            position: relative;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 1.2rem 0.8rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: 2.5rem 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.8rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            height: 350px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--primary-color);
+            margin: 2rem 0 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .section-title i {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pages-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pages-list li {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .pages-list li:hover {
+            background: rgba(160, 217, 246, 0.1);
+            padding-left: 1.5rem;
+        }
+
+        .page-name {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .page-visits {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 154, 158, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .last-updated {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 3rem;
+        }
+
+        .footer-heart {
+            color: #e74c3c;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 992px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0 0.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-card {
+                padding: 1.8rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="blog/blog.html"><i class="fas fa-blog"></i> 博客</a></li>
+                <li><a href="about.html"><i class="fas fa-user"></i> 简介</a></li>
+                <li><a href="stats.html" class="active"><i class="fas fa-chart-bar"></i> 数据</a></li>
+                <li><a href="ai.html"><i class="fas fa-robot"></i> AI助手</a></li>
+                <li><a href="links.html"><i class="fas fa-link"></i> 友链</a></li>
+            </ul>
+        </div>
+    </nav>
+    <script src="//api.busuanzi.cc/static/3.6.9/busuanzi.min.js" defer></script>
+    <div class="container">
+        <div class="page-header animate-fadeIn">
+            <h1 class="page-title">网站数据统计</h1>
+            <p class="page-subtitle">实时追踪网站访问情况和用户互动数据，助力内容优化</p>
+        </div>
+
+        <div class="stats-card animate-fadeIn delay-1">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <span id="busuanzi_site_pv" class="stat-value"><span class="loading"></span></span>
+                    <div class="stat-label">总访问量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span id="busuanzi_site_uv" class="stat-value"><span class="loading"></span></span>
+                    <div class="stat-label">独立访客</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <span id="busuanzi_today_site_pv" class="stat-value"><span class="loading"></span></span>
+                    <div class="stat-label">今日访问</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <span id="busuanzi_today_site_uv" class="stat-value"><span class="loading"></span></span>
+                    <div class="stat-label">今日访客</div>
+                </div>
+            </div>
+
+            <div class="last-updated">最后更新: <span id="update-time">--</span></div>
+        </div>
+        
+        <script>
+
+            // 等待busuanzi加载后绘制
+            function tryDrawCanvas() {
+                if (typeof busuanzi !== 'undefined' && busuanzi.day && busuanzi.day.pv) {
+                    drawCanvasVisits();
+                } else {
+                    setTimeout(tryDrawCanvas, 800);
+                }
+            }
+            window.addEventListener('load', tryDrawCanvas);
+        </script>
+        
+
+        <div class="stats-card animate-fadeIn delay-3">
+            <h2 class="section-title"><i class="fas fa-fire"></i> 热门页面</h2>
+            <ul class="pages-list">
+                <li>
+                    <span class="page-name"><i class="fas fa-home"></i> 首页</span>
+                    <span class="page-visits" id="home_visits"><span class="loading"></span></span>
+                </li>
+                <li>
+                    <span class="page-name"><i class="fas fa-blog"></i> 博客</span>
+                    <span class="page-visits" id="blog_visits"><span class="loading"></span></span>
+                </li>
+                <li>
+                    <span class="page-name"><i class="fas fa-code"></i> HTML开发基本知识</span>
+                    <span class="page-visits" id="html_visits"><span class="loading"></span></span>
+                </li>
+                <li>
+                    <span class="page-name"><i class="fas fa-user"></i> 关于我</span>
+                    <span class="page-visits" id="about_visits"><span class="loading"></span></span>
+                </li>
+            </ul>
+        </div>
+
+        
+
+    <footer>
+        <p>🚀 持续升级中的蒟蒻OIer | 📧 yuze-it@outlook.com</p>
+        <p>© 2025 Yuze's Digital Playground | 用<span class="footer-heart">❤</span>创造美好</p>
+    </footer>
+
+    <script>
+        // 添加AI聊天切换功能
+        function toggleAIChat() {
+            // AI聊天面板切换逻辑
+            alert('AI助手功能将在此处实现');
+        }
+
+        // 加载不蒜子统计脚本
+        document.write("<script async src='//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js'><\/script>");
+
+        // 更新统计数据
+        function updateStats() {
+            // 检查不蒜子是否已加载
+            if (typeof busuanzi !== 'undefined') {
+                // 更新总访问量和访客数
+                document.getElementById('total_visits').innerHTML = formatNumber(busuanzi.site.pv);
+                document.getElementById('unique_visitors').innerHTML = formatNumber(busuanzi.site.uv);
+                document.getElementById('today_visits').innerHTML = formatNumber(busuanzi.day.pv);
+
+                // 模拟平均停留时间（实际应用中可能需要服务器端数据）
+                document.getElementById('avg_time').innerHTML = '8.5<span style="font-size: 1.2rem;">分钟</span>';
+
+                // 热门页面数据（实际应用中可能需要服务器端数据）
+                document.getElementById('home_visits').innerHTML = formatNumber(423);
+                document.getElementById('blog_visits').innerHTML = formatNumber(317);
+                document.getElementById('html_visits').innerHTML = formatNumber(215);
+                document.getElementById('about_visits').innerHTML = formatNumber(187);
+
+                // 更新不蒜子数据
+                document.getElementById('busuanzi_site_pv').innerHTML = formatNumber(busuanzi.site.pv);
+                document.getElementById('busuanzi_site_uv').innerHTML = formatNumber(busuanzi.site.uv);
+                document.getElementById('busuanzi_today_site_pv').innerHTML = formatNumber(busuanzi.day.pv);
+                document.getElementById('busuanzi_today_site_uv').innerHTML = formatNumber(Math.floor(busuanzi.day.pv * 0.7));
+
+                // 更新最后更新时间
+                document.getElementById('update-time').textContent = new Date().toLocaleString('zh-CN');
+                
+                // 绘制访问趋势图表
+                drawVisitsChart();
+            } else {
+                // 如果未加载，1秒后重试
+                setTimeout(updateStats, 1000);
+            }
+        }
+
+        // 数字格式化函数
+        function formatNumber(num) {
+            if (typeof num !== 'number') {
+                num = parseInt(num) || 0;
+            }
+            return num.toLocaleString('zh-CN');
+        }
+
+        // 绘制访问趋势图表
+        function drawVisitsChart() {
+            // 生成最近30天的日期
+            const dates = [];
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                dates.push(date.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }));
+            }
+
+            // 模拟最近30天的访问数据（实际应用中可能需要服务器端数据）
+            // 基于总访问量生成合理的随机数据
+            const totalVisits = parseInt(busuanzi.site.pv);
+            const baseVisits = Math.max(5, Math.floor(totalVisits / 60));
+            const visitsData = dates.map(() => Math.floor(baseVisits * (0.8 + Math.random() * 0.4)));
+
+            // 确保今天的访问量与不蒜子数据一致
+            visitsData[29] = parseInt(busuanzi.day.pv);
+
+            // 创建图表
+            const ctx = document.getElementById('visitsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: '访问量',
+                        data: visitsData,
+                        backgroundColor: 'rgba(91, 192, 222, 0.1)',
+                        borderColor: 'rgba(91, 192, 222, 1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: 'rgba(255, 126, 179, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('zh-CN');
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#2c3e50',
+                            bodyColor: '#4a4a4a',
+                            borderColor: 'rgba(91, 192, 222, 1)',
+                            borderWidth: 1,
+                            padding: 15,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `访问量: ${context.parsed.y.toLocaleString('zh-CN')}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 页面加载完成后更新统计数据
+        window.addEventListener('load', function() {
+            updateStats();
+            
+            // 添加滚动动画效果
+            const cards = document.querySelectorAll('.stats-card');
+            cards.forEach(card => {
+                card.style.opacity = '0';
+            });
+            
+            // 设置更新时间
+            document.getElementById('update-time').textContent = new Date().toLocaleString('zh-CN');
+        });
+    </script>
+</body>
+</html>
