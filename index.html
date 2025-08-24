@@ -562,52 +562,130 @@ footer p {
     margin-right: 0.5rem;     
     color: var(--secondary-color);
 }
-/* 响应式设计 */
-@media (max-width: 1024px) {
-    .container {
-        flex-direction: column;
-    }
-    .sidebar {
-        order: -1;
-    }
-    .main-content,
-    .sidebar {
-        flex: 1;
-    }
-    
-    .ai-panel {
-        width: 90%;
-        right: 5%;
-        height: 70vh;
-    }
+/* 自定义右键菜单样式 */
+.custom-menu {
+    display: none;
+    position: absolute;
+    z-index: 99999;
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    min-width: 160px;
+    font-size: 1rem;
+    flex-direction: column;
+    padding: 0.5rem 0;
+    border: 1px solid #eee;
 }
 
-@media (max-width: 768px) {
-    .project-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    header {
-        padding: 1.5rem;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    .basketball {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .nav-links {
-        flex-wrap: wrap;
-    }
-    
-    .nav-links li {
-        margin: 0 0.5rem;
-    }
+.custom-menu button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: background 0.2s, color 0.2s, transform 0.18s;
 }
+
+.custom-menu button:hover {
+    background: var(--accent-color);
+    color: #fff;
+    transform: scale(1.04);
+}
+
+body.dark-mode .custom-menu {
+    background: #23272f;
+    color: #e3e6ea;
+    border: 1px solid #2c3e50;
+}
+
+body.dark-mode .custom-menu button {
+    color: #e3e6ea;
+}
+
+body.dark-mode .custom-menu button:hover {
+    background: var(--primary-color);
+    color: #23272f;
+    transform: scale(1.04);
+}
+
+body.dark-mode {
+    --text-color: #e3e6ea;
+    --card-bg: #23272f;
+    --primary-color: #7fd7ff;
+    --accent-color: #ffb6b9;
+    --secondary-color: #23272f;
+    --light-color: #23272f;
+    --dark-color: #e3e6ea;
+    background: linear-gradient(135deg, #23272f 0%, #181a20 100%);
+    color: var(--text-color);
+}
+body.dark-mode .top-nav {
+    background: linear-gradient(90deg, #23272f 60%, #2c3e50 100%);
+    box-shadow: 0 4px 20px rgba(127,215,255,0.12);
+    border-bottom: 1px solid #2c3e50;
+}
+body.dark-mode .nav-links a {
+    color: #e3e6ea;
+    background: none;
+}
+body.dark-mode .nav-links a:hover,
+body.dark-mode .nav-links a.active {
+    background: rgba(127,215,255,0.08);
+    color: var(--primary-color);
+}
+body.dark-mode .nav-links a.active::after {
+    background-color: var(--primary-color);
+}
+body.dark-mode .logo {
+    color: var(--primary-color) !important;
+    background: none;
+    text-shadow: 0 2px 8px rgba(127,215,255,0.18);
+}
+body.dark-mode header {
+    background: linear-gradient(135deg, #23272f 0%, #23272f 100%);
+    color: #e3e6ea;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.32);
+}
+body.dark-mode .sidebar-card,
+body.dark-mode .project-card,
+body.dark-mode .achievement-timeline,
+body.dark-mode .oi-tips {
+    background: #23272f !important;
+    color: #e3e6ea !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    border: 1px solid #2c3e50;
+}
+body.dark-mode .project-card h3,
+body.dark-mode .achievement-timeline h2,
+body.dark-mode .oi-tips h2 {
+    color: var(--primary-color);
+}
+body.dark-mode .project-card p,
+body.dark-mode .sidebar-card p,
+body.dark-mode .achievement-timeline li,
+body.dark-mode .oi-tips .code-block {
+    color: #e3e6ea;
+}
+body.dark-mode .code-block {
+    background: #181a20;
+    color: #ffb6b9;
+    border: 1px solid #2c3e50;
+}
+body.dark-mode .visitor-counter,
+body.dark-mode .stat-item {
+    background: #23272f;
+    color: #e3e6ea;
+}
+body.dark-mode .stat-label {
+    color: #e3e6ea;
+}
+body.dark-mode .stat-value {
+    color: var(--primary-color);
+}
+/* ...existing code... */
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
@@ -621,7 +699,7 @@ footer p {
         <a href="../index.html" class="logo"><img src="https://yuze.netlify.app/home/img/66f025c10699e.png" width="45" height="45"></img>YUZE-IT</a>
         <ul class="nav-links">
             <li><a href="index.html" class="active"><i class="fas fa-home"></i> 首页</a></li>
-            <li><a href="blog/blog.html"><i class="fas fa-blog"></i> 博客</a></li>
+            <li><a href="blog"><i class="fas fa-blog"></i> 博客</a></li>
             <li><a href="about.html"><i class="fas fa-user"></i> 简介</a></li>
             <li><a href="stats.html"><i class="fas fa-chart-bar"></i> 数据</a></li>
             <li><a href="ai.html"><i class="fas fa-robot"></i> AI助手</a></li>
@@ -759,6 +837,39 @@ footer p {
         <p>© 2025 Yuze's Digital Playground | 用代码创造美好</p>
     </footer>
 
+    <!-- 自定义右键菜单 -->
+    <div class="custom-menu" id="customMenu" style="display:none;position:absolute;z-index:99999;background:var(--card-bg);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:160px;font-size:1rem;flex-direction:column;padding:0.5rem 0;border:1px solid #eee;">
+        <button id="customRefreshBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">刷新</button>
+        <button id="customHomeBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">返回首页</button>
+        <button id="customThemeBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">夜间模式</button>
+        <button id="customBlogBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">博客</button>
+        <button id="customAIBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">AI助手</button>
+    </div>
+    <style>
+        /* ...existing code... */
+        .custom-menu button {
+            transition: background 0.2s, color 0.2s, transform 0.18s;
+        }
+        .custom-menu button:hover {
+            background: var(--accent-color);
+            color: #fff;
+            transform: scale(1.04);
+        }
+        body.dark-mode .custom-menu {
+            background: #23272f;
+            color: #e3e6ea;
+            border: 1px solid #2c3e50;
+        }
+        body.dark-mode .custom-menu button {
+            color: #e3e6ea;
+        }
+        body.dark-mode .custom-menu button:hover {
+            background: var(--primary-color);
+            color: #23272f;
+            transform: scale(1.04);
+        }
+        /* ...existing code... */
+    </style>
     <script>
         function makeMulti(fn) {
             const str = fn.toString();
@@ -813,6 +924,69 @@ footer p {
         // 随机选择一句名言显示在成就墙
         document.querySelector('.achievement-timeline p').textContent = 
             quotes[Math.floor(Math.random() * quotes.length)];
+
+        // 夜间模式切换
+        function setTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+            updateCustomThemeBtn();
+        }
+        function updateCustomThemeBtn() {
+            const btn = document.getElementById('customThemeBtn');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.textContent = '日间模式';
+            } else {
+                btn.textContent = '夜间模式';
+            }
+        }
+        setTheme(localStorage.getItem('theme') === 'dark');
+
+        // 禁止默认右键和F12/F13
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            showCustomMenu(e.pageX, e.pageY);
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F12' || e.keyCode === 123 || e.key === 'F13' || e.keyCode === 124) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // 自定义右键菜单逻辑
+        const customMenu = document.getElementById('customMenu');
+        function showCustomMenu(x, y) {
+            customMenu.style.display = 'flex';
+            customMenu.style.left = x + 'px';
+            customMenu.style.top = y + 'px';
+            updateCustomThemeBtn();
+        }
+        function hideCustomMenu() {
+            customMenu.style.display = 'none';
+        }
+        document.body.addEventListener('click', hideCustomMenu);
+
+        document.getElementById('customRefreshBtn').onclick = function () {
+            location.reload();
+        };
+        document.getElementById('customHomeBtn').onclick = function () {
+            window.location.href = 'index.html';
+        };
+        document.getElementById('customThemeBtn').onclick = function () {
+            setTheme(!document.body.classList.contains('dark-mode'));
+            hideCustomMenu();
+        };
+        document.getElementById('customBlogBtn').onclick = function () {
+            window.location.href = 'blog';
+        };
+        document.getElementById('customAIBtn').onclick = function () {
+            window.location.href = 'ai.html';
+        };
     </script>
 </body>
 </html>
