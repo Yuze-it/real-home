@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <link rel="stylesheet" href="mouse.css">
+    <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUZE-AI网站</title>
+    <!-- 引入Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入Google字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 引入marked.js库用于Markdown渲染 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
+    <style>
+        :root {
+            --primary-color: #ff9a9e;
+            --secondary-color: #a0d9f6;
+            --text-color: #333;
+            --bg-color: #fff;
+            --card-bg: #f9f9f9;
+            --border-color: #ddd;
+            --hover-color: #ff7a7e;
+            --transition: all 0.3s ease;
+            --code-bg: #f1f1f1;
+            --code-color: #e96900;
+        }
+
+        body.dark-mode {
+            --primary-color: #ff9a9e;
+            --secondary-color: #a0d9f6;
+            --text-color: #f5f5f5;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --hover-color: #ff7a7e;
+            --code-bg: #2d2d2d;
+            --code-color: #ffab70;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 导航栏样式 */
+        .top-nav {
+            background-color: var(--bg-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a i {
+            margin-right: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* 主要内容区域 */
+        .container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+
+        /* 聊天容器样式 */
+        #chat-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: var(--card-bg);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        #chat-history {
+            height: 500px;
+            overflow-y: scroll;
+            padding: 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--card-bg);
+        }
+
+        #chat-history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-history::-webkit-scrollbar-track {
+            background: var(--card-bg);
+        }
+
+        #chat-history::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        #chat-history p {
+            margin-bottom: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            max-width: 80%;
+            word-break: break-word;
+        }
+
+        /* 用户消息样式 - 右对齐 */
+        #chat-history p.user-message {
+            background-color: rgba(160, 217, 246, 0.2);
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        /* AI消息样式 - 左对齐 */
+        #chat-history p.ai-message {
+            background-color: rgba(255, 154, 158, 0.2);
+            margin-right: auto;
+            margin-left: 0;
+        }
+
+        #chat-history p strong {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--primary-color);
+        }
+
+        #chat-history h1, #chat-history h2, #chat-history h3 {
+            color: var(--text-color);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #chat-history h1 {
+            font-size: 1.5rem;
+        }
+
+        #chat-history h2 {
+            font-size: 1.3rem;
+        }
+
+        #chat-history h3 {
+            font-size: 1.1rem;
+        }
+
+        #chat-history strong {
+            color: var(--primary-color);
+        }
+
+        #chat-history em {
+            color: var(--secondary-color);
+        }
+
+        #chat-history a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        #chat-history a:hover {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        #chat-history ul, #chat-history ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #chat-history li {
+            margin-bottom: 0.3rem;
+        }
+
+        #chat-history code {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        #chat-history pre {
+            background-color: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+
+        #chat-history pre code {
+            background-color: transparent;
+            padding: 0;
+            display: block;
+        }
+
+        #chat-history blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+            margin-left: 0;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        #input-container {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+        }
+
+        #input-message {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-right: 0.8rem;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        #input-message:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 154, 158, 0.2);
+        }
+
+        #send-button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #send-button i {
+            margin-right: 0.5rem;
+        }
+
+        #send-button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        /* 主题切换按钮 */
+        #toggle-theme {
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            transition: var(--transition);
+        }
+
+        #toggle-theme:hover {
+            transform: rotate(15deg);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links li {
+                margin: 0 1rem;
+            }
+
+            #chat-history {
+                height: 400px;
+            }
+
+            #chat-history p {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 自定义鼠标指针 -->
+    <div id="custom-cursor" class="custom-cursor">
+    <div class="cursor-inner"></div>
+    <div class="cursor-outer"></div>
+    </div>
+    <!-- 引入鼠标指针脚本 -->
+    <script src="mouse.js"></script>
+    <!-- 导航栏 -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><i class="fas fa-robot"></i> YUZE-AI</a>
+            <ul class="nav-links">
+                <li><a href="../index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="../about.html"><i class="fas fa-user"></i> 关于</a></li>
+                <li><a href="../blog/index.html"><i class="fas fa-blog"></i> 博客</a></li>
+                <li><a href="../stats.html"><i class="fas fa-chart-bar"></i> 统计</a></li>
+                <li><a href="../ai.html" class="active"><i class="fas fa-robot"></i> AI助手</a></li>
+                <li><a href="../links.html"><i class="fas fa-link"></i> 链接</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="container">
+        <h1 class="page-title">AI 聊天助手</h1>
+        <div id="chat-container">
+            <button id="toggle-theme"><i class="fas fa-moon"></i></button>
+            <div id="chat-history"></div>
+            <div id="input-container">
+                <input type="text" id="input-message" placeholder="输入你的问题...">
+                <button id="send-button"><i class="fas fa-paper-plane"></i> 发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 主题切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleThemeButton = document.getElementById('toggle-theme');
+            const inputMessage = document.getElementById('input-message');
+            const sendButton = document.getElementById('send-button');
+            const moonIcon = toggleThemeButton.querySelector('i');
+
+            // 检查本地存储中的主题偏好
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-mode');
+                moonIcon.classList.remove('fa-moon');
+                moonIcon.classList.add('fa-sun');
+            }
+
+            // 主题切换事件
+            toggleThemeButton.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                    moonIcon.classList.remove('fa-moon');
+                    moonIcon.classList.add('fa-sun');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    moonIcon.classList.remove('fa-sun');
+                    moonIcon.classList.add('fa-moon');
+                }
+            });
+
+            // 按下 Enter 键发送消息
+            inputMessage.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    sendButton.click();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // 定义API的基础URL和密钥（保留原始代码）
+        const base_url = 'https://api.moonshot.cn/v1';
+        const api_key = 'sk-CPO09ERrOeCh6lQxThVls8a7Itr3d49saydKYKkikD0pyUIx';
+
+        const inputMessage = document.getElementById('input-message');
+        const chatHistory = document.getElementById('chat-history');
+        const sendButton = document.getElementById('send-button');
+
+        sendButton.addEventListener('click', async () => {
+            const message = inputMessage.value.trim();
+            if (!message) {
+                alert('请输入问题。');
+                return;
+            }
+
+            inputMessage.value = '';
+            
+            // 创建用户消息元素并添加样式类
+            const userMessageElement = document.createElement('p');
+            userMessageElement.className = 'user-message';
+            userMessageElement.innerHTML = `<strong>你：</strong> ${message}`;
+            chatHistory.appendChild(userMessageElement);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            try {
+                // 显示加载状态
+                const loadingElement = document.createElement('p');
+                loadingElement.className = 'ai-message loading';
+                loadingElement.innerHTML = `<strong>AI:</strong> 正在思考...`;
+                chatHistory.appendChild(loadingElement);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                const response = await fetch(`${base_url}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${api_key}`
+                    },
+                    body: JSON.stringify({
+                        model: "kimi-latest",
+                        messages: [
+                            {"role": "system", "content": "你是一个AI助手，回答问题时可以使用Markdown格式。"},
+                            {"role": "user", "content": message}
+                      ],
+                      temperature: 0.3
+                })
+                });
+
+                // 移除加载状态
+                if (loadingElement) {
+                    chatHistory.removeChild(loadingElement);
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const answer = data.choices[0].message.content || '我暂时无法回答这个问题。';
+                
+                // 使用marked.js将Markdown转换为HTML
+                const htmlAnswer = marked.parse(answer);
+                
+                // 为AI回复创建容器，并应用样式
+                const aiResponseElement = document.createElement('p');
+                aiResponseElement.className = 'ai-message';
+                aiResponseElement.innerHTML = `<strong>AI:</strong> ${htmlAnswer}`;
+                chatHistory.appendChild(aiResponseElement);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            } catch (error) {
+                console.error('调用API失败:', error);
+                // 移除加载状态
+                const loadingElement = chatHistory.querySelector('.loading');
+                if (loadingElement) {
+                    chatHistory.removeChild(loadingElement);
+                }
+                
+                // 创建错误消息元素
+                const errorElement = document.createElement('p');
+                errorElement.className = 'ai-message';
+                errorElement.innerHTML = `<strong>AI:</strong> API调用失败，请稍后再试。错误信息：${error.message}`;
+                chatHistory.appendChild(errorElement);
+            }
+        });
+    </script>
+    <!-- 自定义右键菜单 -->
+    <div class="custom-menu" id="customMenu">
+        <button id="menuBack">返回上一页</button>
+        <button id="menuReload">刷新页面</button>
+        <button id="menuHome">返回首页</button>
+        <button id="menuDarkMode">切换深色模式</button>
+    </div>
+    <script src="mouse.js"></script>
+    <script src="security.js"></script>
+</body>
+</html>

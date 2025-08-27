@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUZE-IT | Desktop Countdown 桌面倒计时</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #4fc3f7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 60px 0 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: var(--light);
+            transform: skewY(-3deg);
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo span {
+            margin-left: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .hero-img {
+            max-width: 600px;
+            width: 90%;
+            margin: 40px auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-download {
+            background-color: var(--success);
+        }
+        
+        .btn-github {
+            background-color: var(--dark);
+        }
+        
+        section {
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            color: var(--secondary);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            width: 280px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .language-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .lang-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px;
+        }
+        
+        .copyright {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 40px 0 30px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 50px 20px;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-toggle">
+        <button class="lang-btn active" onclick="toggleLanguage('zh')">中文</button>
+        <button class="lang-btn" onclick="toggleLanguage('en')">English</button>
+    </div>
+    
+    <header>
+        <div class="container">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>YUZE-IT</span>
+            </div>
+            <h1 id="title">桌面倒计时工具</h1>
+            <p class="tagline" id="subtitle">一款美观实用的桌面倒计时应用，助您高效管理时间</p>
+            
+            <div class="hero-img">
+                <p style="width:100%; border-radius:10px;">Desktop Countdown</p>
+            </div>
+            
+            <div class="cta-buttons">
+                <a href="project.zip" class="btn btn-download" download id="downloadBtn">立即下载 (v1.0)</a>
+                <a href="https://github.com/Yuze-it/clock/" class="btn btn-github" target="_blank" id="githubBtn">前往 GitHub</a>
+            </div>
+        </div>
+    </header>
+    
+    <section>
+        <div class="container">
+            <h2 id="featuresTitle">功能特色</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🕒</div>
+                    <h3 class="feature-title" id="feature1Title">自定义倒计时</h3>
+                    <p id="feature1Desc">设置任意目标日期/时间，精确到秒的倒计时显示</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title" id="feature2Title">个性化外观</h3>
+                    <p id="feature2Desc">自定义颜色、字体大小、透明度，打造专属倒计时样式</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🖥️</div>
+                    <h3 class="feature-title" id="feature3Title">多位置选择</h3>
+                    <p id="feature3Desc">支持居中、右上、右下等多种窗口位置选择</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3 class="feature-title" id="feature4Title">智能设置</h3>
+                    <p id="feature4Desc">自动保存设置，支持开机自启动和自动继续计时</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section style="background-color: #f1f5f9;">
+        <div class="container">
+            <h2 id="downloadTitle">下载安装</h2>
+            <div style="max-width: 800px; margin: 0 auto; text-align: left;">
+                <h3 id="step1Title">1. 下载安装包</h3>
+                <p id="step1Desc">点击上方"立即下载"按钮获取最新版本安装包</p>
+                
+                <h3 id="step2Title">2. 解压文件</h3>
+                <p id="step2Desc">将下载的ZIP文件解压到您喜欢的目录</p>
+                
+                <h3 id="step3Title">3. 运行应用</h3>
+                <p id="step3Desc">Windows用户直接运行desktop_countdown.exe，其他系统需要Python环境</p>
+                
+                <h3 id="requirementsTitle">系统要求</h3>
+                <p id="requirementsDesc">Windows 7/10/11 或 macOS 10.15+ 或 Linux (需Python 3.6+)</p>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="logo" style="color: white; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>YUZE-IT</span>
+            </div>
+            <p id="footerText">用技术创造价值，用代码改变世界</p>
+            <p class="copyright">© 2025 YUZE-IT. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Language content
+        const content = {
+            zh: {
+                title: "桌面倒计时工具",
+                subtitle: "一款美观实用的桌面倒计时应用，助您高效管理时间",
+                downloadBtn: "立即下载 (v1.0)",
+                githubBtn: "前往 GitHub",
+                featuresTitle: "功能特色",
+                feature1Title: "自定义倒计时",
+                feature1Desc: "设置任意目标日期/时间，精确到秒的倒计时显示",
+                feature2Title: "个性化外观",
+                feature2Desc: "自定义颜色、字体大小、透明度，打造专属倒计时样式",
+                feature3Title: "多位置选择",
+                feature3Desc: "支持居中、右上、右下等多种窗口位置选择",
+                feature4Title: "智能设置",
+                feature4Desc: "自动保存设置，支持开机自启动和自动继续计时",
+                downloadTitle: "下载安装",
+                step1Title: "1. 下载安装包",
+                step1Desc: "点击上方"立即下载"按钮获取最新版本安装包",
+                step2Title: "2. 解压文件",
+                step2Desc: "将下载的ZIP文件解压到您喜欢的目录",
+                step3Title: "3. 运行应用",
+                step3Desc: "Windows用户直接运行tool.exe，其他系统需要Python环境",
+                requirementsTitle: "系统要求",
+                requirementsDesc: "Windows 7/10/11 或 macOS 10.15+ 或 Linux (需Python 3.6+)",
+                footerText: "用技术创造价值，用代码改变世界"
+            },
+            en: {
+                title: "Desktop Countdown",
+                subtitle: "A beautiful and practical desktop countdown application to help you manage time efficiently",
+                downloadBtn: "Download Now (v1.0)",
+                githubBtn: "View on GitHub",
+                featuresTitle: "Features",
+                feature1Title: "Custom Countdown",
+                feature1Desc: "Set any target date/time with countdown display accurate to the second",
+                feature2Title: "Personalized Appearance",
+                feature2Desc: "Customize colors, font size, transparency to create your own countdown style",
+                feature3Title: "Multiple Positions",
+                feature3Desc: "Support for center, top right, bottom right and other window positions",
+                feature4Title: "Smart Settings",
+                feature4Desc: "Auto-save settings, support for auto-start and auto-continue countdown",
+                downloadTitle: "Download & Install",
+                step1Title: "1. Download Package",
+                step1Desc: "Click the "Download Now" button above to get the latest version",
+                step2Title: "2. Extract Files",
+                step2Desc: "Extract the downloaded ZIP file to your preferred directory",
+                step3Title: "3. Run Application",
+                step3Desc: "Windows users can run desktop_countdown.exe directly, other systems require Python environment",
+                requirementsTitle: "System Requirements",
+                requirementsDesc: "Windows 7/10/11 or macOS 10.15+ or Linux (Python 3.6+ required)",
+                footerText: "Creating value with technology, changing the world with code"
+            }
+        };
+
+        function toggleLanguage(lang) {
+            // Update button active state
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === (lang === 'zh' ? '中文' : 'English'));
+            });
+
+            // Update all text content
+            Object.keys(content[lang]).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = content[lang][key];
+                }
+            });
+        }
+
+        // Initialize with Chinese
+        toggleLanguage('zh');
+    </script>
+    <script src="../security.js"></script>
+</body>
+</html>

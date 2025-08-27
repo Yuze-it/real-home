@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="../mouse.css">
+    <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="我的博客 - 记录每一天的思考与成长，分享技术、生活与成长心得。">
+    <meta name="keywords" content="博客, 技术, 前端, HTML, CSS, 生活">
+    <title>我的博客 - Yuze's Digital Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入 KaTeX 支持 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool'></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 添加marked加载失败备用方案 -->
+    <script>
+        // 检查marked是否成功加载，如果没有，尝试使用备用CDN
+        if (typeof marked === 'undefined') {
+            console.warn('主marked CDN加载失败，尝试备用CDN...');
+            const backupScript = document.createElement('script');
+            backupScript.src = 'https://unpkg.com/marked/marked.min.js';
+            backupScript.onload = function() {
+                console.log('备用marked CDN加载成功');
+            };
+            backupScript.onerror = function() {
+                console.error('所有marked CDN加载失败');
+            };
+            document.head.appendChild(backupScript);
+        }
+
+        // 处理折叠框语法的预处理函数
+function preprocessCollapsibleBlocks(md) {
+    // 定义不同类型折叠框的样式类名
+    const blockTypes = {
+        'info': 'collapsible-info',
+        'success': 'collapsible-success',
+        'warning': 'collapsible-warning',
+        'error': 'collapsible-error'
+    };
+
+    // 支持嵌套折叠框，最深层是3个冒号，向外每层增加一个冒号
+    let result = md;
+    
+    // 处理从外层到内层的折叠框
+    for (let depth = 10; depth >= 3; depth--) {
+        const startColons = ':'.repeat(depth);
+        const endColons = ':'.repeat(depth);
+        
+        // 正则表达式匹配折叠框语法
+        const regex = new RegExp(`${startColons}\\s*(\\w+)\\s*\\[(.*?)\\]\\s*(\\{(open)\\})?\\s*\\n([\\s\\S]*?)\\n\\s*${endColons}`, 'g');
+        
+        result = result.replace(regex, (match, type, title, openFlag, openValue, content) => {
+            // 获取对应的样式类名
+            const typeClass = blockTypes[type] || blockTypes['info'];
+            // 检查是否默认展开
+            const isOpen = openFlag === '{open}';
+            // 生成唯一ID用于折叠框
+            const blockId = `collapsible-${Math.random().toString(36).substr(2, 9)}`;
+            // 生成内容容器ID
+            const contentId = `collapsible-content-${blockId}`;
+            
+            // 返回HTML结构，为内容添加ID以便后续处理
+            return `
+<div class="collapsible-container ${typeClass}">
+    <div class="collapsible-header" onclick="toggleCollapsible('${blockId}')">
+        <span class="collapsible-icon">${isOpen ? '−' : '+'}</span>
+        <span class="collapsible-title">${title}</span>
+    </div>
+    <div id="${blockId}" class="collapsible-content" data-content-id="${contentId}" style="display: ${isOpen ? 'block' : 'none'}">
+        <div id="${contentId}" class="collapsible-content-markdown">${content}</div>
+    </div>
+</div>
+`;
+        });
+    }
+    
+    return result;
+}
+
+// 折叠框切换函数
+function toggleCollapsible(id) {
+    const content = document.getElementById(id);
+    const icon = content.previousElementSibling.querySelector('.collapsible-icon');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.textContent = '−';
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '+';
+    }
+}
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        /* 变量定义 */
+        :root {
+            --primary-color: #ff9a9e;
+            --accent-color: #a0d9f6;
+            --secondary-color: #f5c3d8;
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --text-color: #4a4a4a;
+            --text-light: #7f8c8d;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --radial-gradient: radial-gradient(circle at top right, #ff9a9e, #a0d9f6);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* 折叠框颜色变量 */
+            --collapsible-info-bg: rgba(160, 217, 246, 0.1);
+            --collapsible-info-border: #a0d9f6;
+            --collapsible-success-bg: rgba(46, 204, 113, 0.1);
+            --collapsible-success-border: #2ecc71;
+            --collapsible-warning-bg: rgba(241, 196, 15, 0.1);
+            --collapsible-warning-border: #f1c40f;
+            --collapsible-error-bg: rgba(231, 76, 60, 0.1);
+            --collapsible-error-border: #e74c3c;
+        }
+
+        /* 折叠框样式 */
+        .collapsible-container {
+            margin: 1.5em 0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .collapsible-header {
+            padding: 0.8em 1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            transition: var(--transition);
+            user-select: none;
+        }
+        
+        .collapsible-header:hover {
+            opacity: 0.9;
+        }
+        
+        .collapsible-icon {
+            font-size: 1.2em;
+            font-weight: bold;
+            width: 1.2em;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .collapsible-content {
+            padding: 1em;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 不同类型折叠框的样式 */
+        .collapsible-info {
+            border: 1px solid var(--collapsible-info-border);
+            background: var(--collapsible-info-bg);
+        }
+        
+        .collapsible-info .collapsible-header {
+            background: linear-gradient(135deg, rgba(160, 217, 246, 0.3), rgba(160, 217, 246, 0.1));
+            color: #2980b9;
+        }
+        
+        .collapsible-success {
+            border: 1px solid var(--collapsible-success-border);
+            background: var(--collapsible-success-bg);
+        }
+        
+        .collapsible-success .collapsible-header {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(46, 204, 113, 0.1));
+            color: #27ae60;
+        }
+        
+        .collapsible-warning {
+            border: 1px solid var(--collapsible-warning-border);
+            background: var(--collapsible-warning-bg);
+        }
+        
+        .collapsible-warning .collapsible-header {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(241, 196, 15, 0.1));
+            color: #f39c12;
+        }
+        
+        .collapsible-error {
+            border: 1px solid var(--collapsible-error-border);
+            background: var(--collapsible-error-bg);
+        }
+        
+        .collapsible-error .collapsible-header {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(231, 76, 60, 0.1));
+            color: #c0392b;
+        }
+
+        /* 夜间模式下折叠框样式 */
+        body.dark-mode .collapsible-container {
+            border: 1px solid rgba(127, 215, 255, 0.2);
+        }
+        
+        body.dark-mode .collapsible-content {
+            background: rgba(35, 39, 47, 0.8);
+            border-top-color: rgba(127, 215, 255, 0.1);
+        }
+        
+        body.dark-mode .collapsible-info .collapsible-header {
+            background: linear-gradient(135deg, rgba(160, 217, 246, 0.15), rgba(160, 217, 246, 0.05));
+            color: #7fd7ff;
+        }
+        
+        body.dark-mode .collapsible-success .collapsible-header {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.05));
+            color: #52e694;
+        }
+        
+        body.dark-mode .collapsible-warning .collapsible-header {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.15), rgba(241, 196, 15, 0.05));
+            color: #f8d26a;
+        }
+        
+        body.dark-mode .collapsible-error .collapsible-header {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(231, 76, 60, 0.05));
+            color: #ff8a80;
+        }
+
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #fff5f7 0%, #e6f0f5 100%);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        body.dark-mode {
+            --text-color: #e3e6ea;
+            --card-bg: #23272f;
+            --primary-color: #7fd7ff;
+            --accent-color: #ffb6b9;
+            --secondary-color: #23272f;
+            --light-color: #23272f;
+            --dark-color: #e3e6ea;
+            background: linear-gradient(135deg, #23272f 0%, #181a20 100%);
+            color: var(--text-color);
+        }
+
+        /* 导航栏样式 */
+        .top-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            margin: 0 auto 2rem;
+            padding: 0;
+            border-radius: 16px;
+            max-width: 1400px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .blog-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin: 0 0.2rem;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 1.2rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            border-radius: 12px;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background: rgba(255, 154, 158, 0.1);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+            background: rgba(255, 154, 158, 0.1);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        body.dark-mode .top-nav {
+            background: linear-gradient(90deg, #23272f 60%, #2c3e50 100%);
+            box-shadow: 0 4px 20px rgba(127, 215, 255, 0.12);
+            border-bottom: 1px solid #2c3e50;
+        }
+
+        body.dark-mode .nav-container {
+            background: none;
+        }
+
+        body.dark-mode .nav-links a {
+            color: #e3e6ea;
+            background: none;
+        }
+
+        body.dark-mode .nav-links a:hover,
+        body.dark-mode .nav-links a.active {
+            background: rgba(127, 215, 255, 0.08);
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .nav-links a.active::after {
+            background-color: var(--primary-color);
+        }
+
+        body.dark-mode .blog-logo {
+            color: var(--primary-color) !important;
+            background: none;
+            text-shadow: 0 2px 8px rgba(127, 215, 255, 0.18);
+        }
+
+        /* 头部样式 */
+        header {
+            background: var(--radial-gradient);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+            width: 100%;
+            max-width: 1000px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            transform: rotate(30deg);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.8rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border: 2px solid transparent;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(160, 217, 246, 0.5);
+            background: #f8f9fa;
+        }
+
+        .search-box button {
+            padding: 0.8rem 1.8rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.08);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-box button:hover {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(160, 217, 246, 0.15);
+        }
+
+        #theme-toggle {
+            margin-top: 1.5rem;
+            padding: 0.8rem 1.8rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.08);
+        }
+
+        #theme-toggle:hover {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(160, 217, 246, 0.15);
+        }
+
+        body.dark-mode .search-box input {
+            background: #222;
+            color: #f0f0f0;
+            border-color: var(--accent-color);
+        }
+
+        body.dark-mode .search-box button,
+        body.dark-mode #theme-toggle {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: #fff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.18);
+        }
+
+        body.dark-mode .search-box button:hover,
+        body.dark-mode #theme-toggle:hover {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: #fff;
+        }
+
+        .highlight {
+            background: #ffe3e3;
+            color: #d7263d;
+            border-radius: 4px;
+            padding: 0 2px;
+        }
+
+        /* 双栏布局样式 */
+        .layout-container {
+            display: flex;
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            flex: 3;
+            min-width: 0;
+        }
+
+        .sidebar {
+            flex: 1;
+            position: sticky;
+            top: 100px;
+            align-self: flex-start;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        /* 文章内容区域 */
+        #article-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            min-height: 500px;
+            font-size: 1.08rem;
+            line-height: 1.85;
+            word-break: break-word;
+        }
+
+        #article-content h1,
+        #article-content h2,
+        #article-content h3,
+        #article-content h4,
+        #article-content h5 {
+            margin-top: 2.2rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 0.3rem;
+        }
+
+        #article-content h1 {
+            font-size: 2.2rem;
+        }
+
+        #article-content h2 {
+            font-size: 1.7rem;
+        }
+
+        #article-content h3 {
+            font-size: 1.3rem;
+            border-bottom: none;
+        }
+
+        #article-content h4,
+        #article-content h5 {
+            font-size: 1.1rem;
+            border-bottom: none;
+        }
+
+        #article-content p {
+            margin: 1.1em 0;
+            color: var(--text-color);
+        }
+
+        #article-content ul,
+        #article-content ol {
+            margin: 1em 0 1em 2em;
+            padding-left: 0.5em;
+            list-style: initial;
+        }
+
+        #article-content ul {
+            list-style-type: disc;
+        }
+
+        #article-content ol {
+            list-style-type: decimal;
+        }
+
+        #article-content li {
+            margin-bottom: 0.5em;
+        }
+
+        #article-content blockquote {
+            border-left: 4px solid var(--accent-color);
+            background: rgba(160, 217, 246, 0.08);
+            color: #666;
+            margin: 1.2em 0;
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            font-style: italic;
+        }
+
+        #article-content table {
+            border-collapse: collapse;
+            margin: 1.2em 0;
+            width: 100%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.08);
+        }
+
+        #article-content th,
+        #article-content td {
+            border: 1px solid #eaeaea;
+            padding: 0.7em 1em;
+            text-align: left;
+        }
+
+        #article-content th {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        #article-content a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        #article-content a:hover {
+            color: var(--accent-color);
+        }
+
+        #article-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1em 0;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.08);
+        }
+
+        /* 代码块美化 */
+        #article-content pre {
+            position: relative;
+            background: #23272f;
+            color: #f8f8f2;
+            border-radius: 10px;
+            padding: 1.2em 1em 1em 1em;
+            margin: 1.5em 0;
+            font-family: 'Fira Code', 'Consolas', 'Menlo', monospace;
+            font-size: 0.98em;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.08);
+        }
+
+        #article-content code {
+            background: #f5f2f0;
+            color: #d7263d;
+            border-radius: 4px;
+            padding: 0.2em 0.4em;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.98em;
+            word-break: break-all;
+        }
+
+        #article-content pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+        }
+
+        /* 代码块复制按钮 */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.25em 0.8em;
+            font-size: 0.95em;
+            cursor: pointer;
+            opacity: 0.85;
+            transition: background 0.2s, opacity 0.2s;
+            z-index: 2;
+            display: none;
+        }
+
+        #article-content pre:hover .copy-btn {
+            display: block;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-color);
+            opacity: 1;
+        }
+
+        .copy-btn.copied {
+            background: #2ecc71;
+            color: #fff;
+            opacity: 1;
+        }
+
+        /* 侧边栏文章列表美化 */
+        .sidebar-article-list {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .sidebar-article-list h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--accent-color);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-article-item {
+            margin-bottom: 1.2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+        }
+
+        .sidebar-article-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .sidebar-article-item a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .sidebar-article-item a:hover {
+            background: rgba(160, 217, 246, 0.13);
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.08);
+        }
+
+        .sidebar-article-item a.active {
+            background: linear-gradient(90deg, var(--accent-color) 0%, var(--primary-color) 100%);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.12);
+        }
+
+        .sidebar-article-item .date {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0 1rem;
+        }
+
+        /* 支持Typora任务列表 */
+        #article-content ul.task-list {
+            list-style: none;
+            padding-left: 1.5em;
+        }
+
+        #article-content ul.task-list li {
+            position: relative;
+            padding-left: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        #article-content ul.task-list input[type="checkbox"] {
+            position: absolute;
+            left: 0;
+            top: 0.2em;
+            width: 1em;
+            height: 1em;
+            accent-color: var(--primary-color);
+        }
+
+        /* 支持Typora脚注 */
+        #article-content sup.footnote-ref {
+            font-size: 0.85em;
+            color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        #article-content .footnotes {
+            font-size: 0.95em;
+            color: var(--text-light);
+            margin-top: 2em;
+            border-top: 1px dashed var(--accent-color);
+            padding-top: 1em;
+        }
+
+        #article-content .footnotes ol {
+            margin-left: 1.5em;
+        }
+
+        #article-content .footnotes li {
+            margin-bottom: 0.5em;
+        }
+
+        /* 支持Typora删除线 */
+        #article-content del {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        /* 支持Typora内嵌HTML */
+        #article-content .typora-html {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1em;
+            margin: 1em 0;
+            box-shadow: 0 2px 8px rgba(160, 217, 246, 0.08);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 992px) {
+            .layout-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                margin-bottom: 2rem;
+            }
+
+            header h1 {
+                font-size: 2.3rem;
+            }
+
+            header p {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                padding: 0.8rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            header {
+                padding: 1.8rem 1.5rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            #article-content {
+                padding: 1.8rem;
+            }
+
+            #article-content h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        body.dark-mode header {
+            background: linear-gradient(135deg, #23272f 0%, #23272f 100%);
+            color: #e3e6ea;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.32);
+        }
+
+        body.dark-mode .sidebar-article-list,
+        body.dark-mode #article-content,
+        body.dark-mode .main-content,
+        body.dark-mode .sidebar,
+        body.dark-mode .project-card,
+        body.dark-mode .blog-logo,
+        body.dark-mode .search-box input {
+            background: #23272f !important;
+            color: #e3e6ea !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+        }
+
+        body.dark-mode .sidebar-article-list {
+            border: 1px solid #2c3e50;
+        }
+
+        body.dark-mode .sidebar-article-item a,
+        body.dark-mode .sidebar-article-item .date {
+            color: #e3e6ea;
+        }
+
+        body.dark-mode .sidebar-article-item a:hover,
+        body.dark-mode .sidebar-article-item a.active {
+            background: linear-gradient(90deg, #23272f 0%, #2c3e50 100%);
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(127, 215, 255, 0.12);
+        }
+
+        body.dark-mode #article-content {
+            border: 1px solid #2c3e50;
+        }
+
+        body.dark-mode #article-content h1,
+        body.dark-mode #article-content h2,
+        body.dark-mode #article-content h3,
+        body.dark-mode #article-content h4,
+        body.dark-mode #article-content h5 {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        body.dark-mode #article-content p,
+        body.dark-mode #article-content li,
+        body.dark-mode #article-content blockquote,
+        body.dark-mode #article-content .footnotes {
+            color: #e3e6ea;
+        }
+
+        body.dark-mode #article-content blockquote {
+            background: rgba(127, 215, 255, 0.08);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        body.dark-mode #article-content table {
+            background: #23272f;
+            color: #e3e6ea;
+        }
+
+        body.dark-mode #article-content th {
+            background: var(--primary-color);
+            color: #23272f;
+        }
+
+        body.dark-mode #article-content td {
+            border: 1px solid #2c3e50;
+        }
+
+        body.dark-mode #article-content a {
+            color: var(--accent-color);
+        }
+
+        body.dark-mode #article-content a:hover {
+            color: var(--primary-color);
+        }
+
+        body.dark-mode #article-content img {
+            box-shadow: 0 2px 8px rgba(127, 215, 255, 0.12);
+        }
+
+        body.dark-mode #article-content pre {
+            background: #181a20;
+            color: #e3e6ea;
+            box-shadow: 0 2px 8px rgba(127, 215, 255, 0.12);
+        }
+
+        body.dark-mode #article-content code {
+            background: #23272f;
+            color: #ffb6b9;
+        }
+
+        body.dark-mode .copy-btn {
+            background: var(--primary-color);
+            color: #23272f;
+        }
+
+        body.dark-mode .copy-btn:hover {
+            background: var(--accent-color);
+            color: #23272f;
+        }
+
+        body.dark-mode .copy-btn.copied {
+            background: #2ecc71;
+            color: #23272f;
+        }
+
+        body.dark-mode .highlight {
+            background: #2c3e50;
+            color: #ffb6b9;
+        }
+
+        body.dark-mode footer {
+            background: #23272f;
+            color: #7f8c8d;
+        }
+
+        body.dark-mode .custom-menu {
+            background: #23272f;
+            color: #e3e6ea;
+            border: 1px solid #2c3e50;
+        }
+
+        body.dark-mode .custom-menu button {
+            color: #e3e6ea;
+        }
+
+        body.dark-mode .custom-menu button:hover {
+            background: var(--primary-color);
+            color: #23272f;
+        }
+
+        /* 自定义右键菜单悬停动画 */
+        .custom-menu button {
+            transition: background 0.2s, color 0.2s, transform 0.18s;
+        }
+
+        .custom-menu button:hover {
+            background: var(--accent-color);
+            color: #fff;
+            transform: scale(1.04);
+        }
+
+        /* 夜间模式下右键菜单悬停动画 */
+        body.dark-mode .custom-menu button:hover {
+            background: var(--primary-color);
+            color: #23272f;
+            transform: scale(1.04);
+        }
+
+        .context-menu {
+            position: absolute;
+            z-index: 9999;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 140px;
+            font-size: 1rem;
+            display: none;
+            flex-direction: column;
+            padding: 0.5rem 0;
+            border: 1px solid #eee;
+            left: 0;
+            top: 0;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow: auto;
+            transition: opacity 0.15s;
+        }
+
+        .context-menu button {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 0.7rem 1.2rem;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: background 0.2s, color 0.2s, transform 0.18s;
+        }
+
+        .context-menu button:hover {
+            background: var(--accent-color);
+            color: #fff;
+            transform: scale(1.04);
+        }
+
+        body.dark-mode .context-menu {
+            background: #23272f;
+            color: #e3e6ea;
+            border: 1px solid #2c3e50;
+        }
+
+        body.dark-mode .context-menu button {
+            color: #e3e6ea;
+        }
+
+        body.dark-mode .context-menu button:hover {
+            background: var(--primary-color);
+            color: #23272f;
+            transform: scale(1.04);
+        }
+
+        /* 数学公式样式 */
+        .math-block {
+            display: block;
+            overflow-x: auto;
+            margin: 1em 0;
+            text-align: center;
+        }
+
+        .math-inline {
+            display: inline-block;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        .loading div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .loading div::after {
+            content: '';
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 自定义鼠标指针 -->
+    <div id="custom-cursor" class="custom-cursor">
+        <div class="cursor-inner"></div>
+        <div class="cursor-outer"></div>
+    </div>
+    <!-- 引入鼠标指针脚本 -->
+    <script src="../mouse.js"></script>
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="blog-logo">
+                <i class="fas fa-blog"></i>
+                <span>YUZE-IT</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="blog.html" class="active"><i class="fas fa-feather"></i> 博客</a></li>
+                <li><a href="../about.html"><i class="fas fa-user"></i> 简介</a></li>
+                <li><a href="../stats.html"><i class="fas fa-chart-line"></i> 数据</a></li>
+                <li><a href="../ai.html"><i class="fas fa-robot"></i> AI助手</a></li>
+                <li><a href="../links.html"><i class="fas fa-link"></i> 友链</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header>
+        <h1>我的博客</h1>
+        <p>记录每一天的思考与成长</p>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="请输入关键字搜索文章...">
+            <button id="search-btn"><i class="fas fa-search"></i> 搜索</button>
+        </div>
+    </header>
+
+    <div class="layout-container">
+        <main class="main-content">
+            <div id="article-content">
+                <h2>欢迎阅读我的博客</h2>
+                <p>请从右侧选择一篇文章开始阅读。这里分享了我的技术学习心得、生活感悟以及个人成长经历。希望你能找到对你有价值的内容。</p>
+                <p>如果你喜欢我的文章，欢迎通过页面底部的链接联系我，或者分享给你的朋友们。</p>
+                
+                <!-- 折叠框示例 -->
+                <h3>折叠框功能演示</h3>
+                <p>以下是一些折叠框示例，展示博客支持的折叠框功能：</p>
+                
+                <div class="collapsible-container collapsible-info">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-info')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">信息折叠框</span>
+                    </div>
+                    <div id="demo-info" class="collapsible-content" style="display: none;">
+                        <p>这是一个信息类型的折叠框，用于展示一般信息内容。</p>
+                        <p>点击标题可以展开或折叠内容。</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-container collapsible-success">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-success')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">成功折叠框</span>
+                    </div>
+                    <div id="demo-success" class="collapsible-content" style="display: none;">
+                        <p>这是一个成功类型的折叠框，用于展示成功或积极的内容。</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-container collapsible-warning">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-warning')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">警告折叠框</span>
+                    </div>
+                    <div id="demo-warning" class="collapsible-content" style="display: none;">
+                        <p>这是一个警告类型的折叠框，用于展示需要注意的内容。</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-container collapsible-error">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-error')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">错误折叠框</span>
+                    </div>
+                    <div id="demo-error" class="collapsible-content" style="display: none;">
+                        <p>这是一个错误类型的折叠框，用于展示错误或危险的内容。</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-article-list" id="sidebar-article-list">
+                <h3><i class="fas fa-list"></i> 文章列表</h3>
+                <!-- 文章列表由JS动态生成 -->
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <p>© 2025 YUZE-IT的博客 | 且听风吟，静待花开 | <a href="#"><i class="fas fa-envelope"></i> 联系我</a></p>
+    </footer>
+
+    <div class="context-menu" id="contextMenu">
+        <button id="openNewTabBtn"><i class="fas fa-external-link-alt"></i> 新标签页打开</button>
+        <button id="shareLinkBtn"><i class="fas fa-share-alt"></i> 分享链接</button>
+        <div class="share-tip" id="shareTip" style="display:none;">已复制到剪贴板</div>
+    </div>
+    <!-- 新增：自定义右键菜单 -->
+    <div class="custom-menu" id="customMenu" style="display:none;position:absolute;z-index:99999;background:var(--card-bg);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:140px;font-size:1rem;flex-direction:column;padding:0.5rem 0;border:1px solid #eee;">
+        <button id="customRefreshBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">刷新</button>
+        <button id="customHomeBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">返回首页</button>
+        <button id="customThemeBtn" style="background:none;border:none;width:100%;text-align:left;padding:0.7rem 1.2rem;cursor:pointer;color:var(--text-color);font-size:1rem;">夜间模式</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 获取元素
+            const themeToggle = document.getElementById('theme-toggle');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            let articlesList = [];
+            let lastRightClickedFilename = null;
+            const contextMenu = document.getElementById('contextMenu');
+
+            // 夜间模式切换逻辑修复
+            function setTheme(isDark) {
+                if (isDark) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light');
+                }
+                updateCustomThemeBtn();
+            }
+            function updateCustomThemeBtn() {
+                const btn = document.getElementById('customThemeBtn');
+                if (document.body.classList.contains('dark-mode')) {
+                    btn.textContent = '日间模式';
+                } else {
+                    btn.textContent = '夜间模式';
+                }
+            }
+            // 页面加载时自动应用本地黑暗模式
+            setTheme(localStorage.getItem('theme') === 'dark');
+
+            // 动态加载文章列表并缓存
+            fetch('articles.json')
+                .then(res => res.json())
+                .then(list => {
+                    articlesList = list;
+                    renderSidebar(list);
+                    // 如果有精准定位参数，自动加载
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const articleParam = urlParams.get('article');
+                    if (articleParam) {
+                        // 高亮并加载
+                        setTimeout(() => {
+                            const sidebar = document.getElementById('sidebar-article-list');
+                            const link = sidebar.querySelector(`.article-link[data-filename="${articleParam}"]`);
+                            if (link) {
+                                link.classList.add('active');
+                                loadArticle(articleParam);
+                                // 滚动到可见
+                                link.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }
+                        }, 100);
+                    }
+                });
+
+            function renderSidebar(list) {
+                const sidebar = document.getElementById('sidebar-article-list');
+                let html = `<h3><i class="fas fa-list"></i> 文章列表</h3>`;
+                if (list.length === 0) {
+                    html += `<div class="search-results-tip">未找到相关文章</div>`;
+                }
+                list.forEach(article => {
+                    html += `
+            <div class="sidebar-article-item">
+                <a href="#" class="article-link" data-filename="${article.filename}">${article.title}</a>
+                <div class="date"><i class="far fa-calendar"></i> ${article.date}</div>
+            </div>`;
+                });
+                sidebar.innerHTML = html;
+
+                // 绑定点击事件
+                sidebar.querySelectorAll('.article-link').forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        sidebar.querySelectorAll('.article-link').forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                        loadArticle(this.dataset.filename);
+                        history.replaceState(null, '', '?article=' + encodeURIComponent(this.dataset.filename));
+                    });
+
+                    // 右键菜单
+                    link.addEventListener('contextmenu', function (e) {
+                        e.preventDefault();
+                        lastRightClickedFilename = this.dataset.filename;
+                        showContextMenu(e.pageX, e.pageY);
+                    });
+                });
+            }
+
+            // 右键菜单逻辑
+            const openNewTabBtn = document.getElementById('openNewTabBtn');
+            const shareLinkBtn = document.getElementById('shareLinkBtn');
+            const shareTip = document.getElementById('shareTip');
+
+            function showContextMenu(x, y, targetElem) {
+                contextMenu.style.display = 'flex';
+                contextMenu.style.visibility = 'visible';
+                contextMenu.style.opacity = '1';
+                contextMenu.style.pointerEvents = 'auto';
+                contextMenu.style.position = 'absolute';
+                // 定位到被右击元素的右侧
+                let left = x + window.scrollX;
+                let top = y + window.scrollY;
+                if (targetElem && targetElem.getBoundingClientRect) {
+                    const rect = targetElem.getBoundingClientRect();
+                    left = rect.right + window.scrollX;
+                    top = rect.top + window.scrollY;
+                }
+                // 边界判断
+                setTimeout(function() {
+                    const menuRect = contextMenu.getBoundingClientRect();
+                    const winWidth = window.innerWidth;
+                    const winHeight = window.innerHeight;
+                    if (left + menuRect.width > winWidth + window.scrollX) left = winWidth + window.scrollX - menuRect.width - 10;
+                    if (top + menuRect.height > winHeight + window.scrollY) top = winHeight + window.scrollY - menuRect.height - 10;
+                    contextMenu.style.left = left + 'px';
+                    contextMenu.style.top = top + 'px';
+                }, 0);
+                shareTip.style.display = 'none';
+            }
+            function hideContextMenu() {
+                contextMenu.style.display = 'none';
+                contextMenu.style.visibility = 'hidden';
+                contextMenu.style.opacity = '0';
+                contextMenu.style.pointerEvents = 'none';
+            }
+            // 只允许文章链接右键弹出文章菜单，其他区域弹自定义菜单
+            document.addEventListener('contextmenu', function (e) {
+                if (e.target.classList.contains('article-link')) {
+                    e.preventDefault();
+                    lastRightClickedFilename = e.target.dataset.filename;
+                    showContextMenu(e.pageX, e.pageY, e.target);
+                } else {
+                    hideContextMenu();
+                    e.preventDefault();
+                    showCustomMenu(e.pageX, e.pageY);
+                }
+            });
+            document.body.addEventListener('click', function () {
+                hideContextMenu();
+                hideCustomMenu();
+            });
+
+            openNewTabBtn.onclick = function () {
+                if (lastRightClickedFilename) {
+                    window.open(window.location.pathname + '?article=' + encodeURIComponent(lastRightClickedFilename), '_blank');
+                    hideContextMenu();
+                }
+            };
+            shareLinkBtn.onclick = function () {
+                if (lastRightClickedFilename) {
+                    const url = window.location.origin + window.location.pathname + '?article=' + encodeURIComponent(lastRightClickedFilename);
+                    navigator.clipboard.writeText(url).then(() => {
+                        shareTip.style.display = 'block';
+                        setTimeout(() => { shareTip.style.display = 'none'; }, 1500);
+                    });
+                    hideContextMenu();
+                }
+            };
+
+            // 禁止默认右键和F12
+            document.addEventListener('contextmenu', function (e) {
+                // 只允许文章列表右键弹出原有菜单，其余弹自定义菜单
+                if (!e.target.classList.contains('article-link')) {
+                    e.preventDefault();
+                    showCustomMenu(e.pageX, e.pageY);
+                }
+            });
+            document.addEventListener('keydown', function (e) {
+                // F12
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // 自定义右键菜单逻辑
+            const customMenu = document.getElementById('customMenu');
+            function showCustomMenu(x, y) {
+                customMenu.style.display = 'flex';
+                customMenu.style.left = x + 'px';
+                customMenu.style.top = y + 'px';
+                updateCustomThemeBtn();
+            }
+            function hideCustomMenu() {
+                customMenu.style.display = 'none';
+            }
+            document.body.addEventListener('click', hideCustomMenu);
+
+            document.getElementById('customRefreshBtn').onclick = function () {
+                location.reload();
+            };
+            document.getElementById('customHomeBtn').onclick = function () {
+                window.location.href = '../index.html';
+            };
+            document.getElementById('customThemeBtn').onclick = function () {
+                setTheme(!document.body.classList.contains('dark-mode'));
+                hideCustomMenu();
+            };
+
+            // 搜索功能实现
+            searchBtn.addEventListener('click', () => {
+                const query = searchInput.value.trim().toLowerCase();
+                if (!query) {
+                    searchInput.style.animation = 'shake 0.5s';
+                    setTimeout(() => { searchInput.style.animation = ''; }, 500);
+                    alert('请先输入搜索内容！');
+                    renderSidebar(articlesList);
+                    return;
+                }
+                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 搜索中...';
+
+                // 标题匹配
+                let matched = articlesList.filter(a => a.title.toLowerCase().includes(query));
+                // 内容匹配（异步读取所有文章内容）
+                Promise.all(articlesList.map(a =>
+                    fetch('article/' + a.filename)
+                        .then(r => r.ok ? r.text() : '')
+                        .then(text => ({ ...a, content: text }))
+                )).then(all => {
+                    let contentMatched = all.filter(a =>
+                        a.content && a.content.toLowerCase().includes(query)
+                    );
+                    // 合并去重
+                    let result = [...matched];
+                    contentMatched.forEach(a => {
+                        if (!result.find(r => r.filename === a.filename)) result.push(a);
+                    });
+                    // 高亮标题
+                    result = result.map(a => {
+                        let t = a.title.replace(new RegExp(query, 'gi'), m => `<span class="highlight">${m}</span>`);
+                        return { ...a, title: t };
+                    });
+                    renderSidebar(result);
+                    searchBtn.innerHTML = '<i class="fas fa-search"></i> 搜索';
+                });
+            });
+
+            // 回车键触发搜索
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+
+            // 渲染数学公式，支持 $...$、$$...$$、\(...\)、\[...\]
+            function renderMathInElement(element) {
+                // 块级公式：$$...$$ 或 \[...\]
+                element.innerHTML = element.innerHTML
+                    .replace(/\$\$([\s\S]+?)\$\$/g, function (match, formula) {
+                        try {
+                            return '<span class="math-block">' + katex.renderToString(formula, { displayMode: true }) + '</span>';
+                        } catch (e) {
+                            return match;
+                        }
+                    })
+                    .replace(/\\\[((?:.|\n)+?)\\\]/g, function (match, formula) {
+                        try {
+                            return '<span class="math-block">' + katex.renderToString(formula, { displayMode: true }) + '</span>';
+                        } catch (e) {
+                            return match;
+                        }
+                    });
+                // 行内公式：$...$ 或 \(...\)
+                element.innerHTML = element.innerHTML
+                    .replace(/\$([^\$]+?)\$/g, function (match, formula) {
+                        if (/\$\$/.test(match)) return match;
+                        try {
+                            return '<span class="math-inline">' + katex.renderToString(formula, { displayMode: false }) + '</span>';
+                        } catch (e) {
+                            return match;
+                        }
+                    })
+                    .replace(/\\\((.+?)\\\)/g, function (match, formula) {
+                        try {
+                            return '<span class="math-inline">' + katex.renderToString(formula, { displayMode: false }) + '</span>';
+                        } catch (e) {
+                            return match;
+                        }
+                    });
+            }
+
+            // 增强Markdown渲染，代码块加复制按钮和高亮
+            function enhanceMarkdown(element) {
+                // 代码块复制按钮
+                element.querySelectorAll('pre code').forEach(function (codeBlock) {
+                    // 避免重复添加
+                    if (codeBlock.parentElement.querySelector('.copy-btn')) return;
+                    const btn = document.createElement('button');
+                    btn.className = 'copy-btn';
+                    btn.textContent = '复制';
+                    // 移除直接绑定的onclick事件
+                    codeBlock.parentElement.insertBefore(btn, codeBlock);
+                });
+                // 代码块高亮
+                element.querySelectorAll('pre code').forEach(function (block) {
+                    hljs.highlightElement(block);
+                });
+            }
+
+            // 加载并渲染 Markdown 文章，支持Typora所有语法
+            function loadArticle(filename) {
+                const articleContent = document.getElementById('article-content');
+                articleContent.innerHTML = `<div class="loading"><div>加载中，请稍候...</div></div>`;
+                fetch('article/' + filename)
+                    .then(res => {
+                        if (!res.ok) throw new Error('文章加载失败');
+                        return res.text();
+                    })
+                    .then(md => {
+                        // 检查marked库是否可用，添加fallback机制
+                        try {
+                            if (typeof marked !== 'undefined') {
+                                // 预处理Markdown内容，处理折叠框语法
+                                const processedMd = preprocessCollapsibleBlocks(md);
+                                articleContent.innerHTML = marked.parse(processedMd);
+                                renderMathInElement(articleContent);
+                                enhanceMarkdown(articleContent);
+                                // 脚注跳转支持
+                                articleContent.querySelectorAll('sup.footnote-ref a').forEach(a => {
+                                    a.onclick = function(e) {
+                                        e.preventDefault();
+                                        const href = a.getAttribute('href');
+                                        const target = articleContent.querySelector(href);
+                                        if (target) target.scrollIntoView({behavior: "smooth"});
+                                    };
+                                });
+                                
+                                // 对折叠框标题进行完整Markdown渲染
+                                articleContent.querySelectorAll('.collapsible-title').forEach(title => {
+                                    // 保存原始标题文本
+                                    const originalTitle = title.textContent;
+                                    // 对标题文本进行Markdown解析和渲染
+                                    try {
+                                        const renderedTitle = marked.parseInline(originalTitle);
+                                        title.innerHTML = renderedTitle;
+                                        // 对标题中的数学公式进行渲染
+                                        renderMathInElement(title);
+                                    } catch (error) {
+                                        console.error('标题Markdown渲染错误:', error);
+                                        // 如果渲染失败，至少确保数学公式能正常显示
+                                        renderMathInElement(title);
+                                    }
+                                });
+                                 
+                                // 添加折叠框内容Markdown渲染
+                                articleContent.querySelectorAll('.collapsible-content-markdown').forEach(contentDiv => {
+                                    try {
+                                        // 获取原始内容文本
+                                        const originalContent = contentDiv.textContent;
+                                        // 对内容进行Markdown解析和渲染
+                                        const renderedContent = marked.parse(originalContent);
+                                        contentDiv.innerHTML = renderedContent;
+                                        // 在内容上渲染数学公式
+                                        renderMathInElement(contentDiv);
+                                        // 增强内容中的代码块
+                                        enhanceMarkdown(contentDiv);
+                                    } catch (error) {
+                                        console.error('折叠框内容Markdown渲染错误:', error);
+                                    }
+                                });
+                            } else {
+                                // 当marked不可用时，使用简单的文本显示作为后备
+                                articleContent.innerHTML = `
+                                    <div style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px;">
+                                        <p style="font-weight: bold;">提示：此字段渲染库未能加载，以下是原始内容：</p>
+                                    </div>
+                                    <pre style="white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #dee2e6;">${escapeHtml(md)}</pre>
+                                `;
+                            }
+                        } catch (error) {
+                            console.error('Markdown渲染错误:', error);
+                            articleContent.innerHTML = `<p>文章渲染失败：${error.message}</p>`;
+                        }
+                    })
+                    .catch(err => {
+                        articleContent.innerHTML = `<p>无法加载文章内容：${err.message}</p>`;
+                    });
+            }
+
+            // HTML转义函数，用于安全显示原始文本
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // 添加抖动动画关键帧
+            const style = document.createElement('style');
+            style.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    `;
+            document.head.appendChild(style);
+
+            // 添加复制按钮事件委托
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('copy-btn')) {
+                    const codeBlock = e.target.nextElementSibling;
+                    if (codeBlock && codeBlock.tagName === 'CODE') {
+                        navigator.clipboard.writeText(codeBlock.textContent)
+                            .then(() => {
+                                e.target.textContent = '已复制';
+                                e.target.classList.add('copied');
+                                setTimeout(() => {
+                                    e.target.textContent = '复制';
+                                    e.target.classList.remove('copied');
+                                }, 2000);
+                            })
+                            .catch(err => {
+                                console.error('复制失败:', err);
+                                e.target.textContent = '复制失败';
+                                setTimeout(() => {
+                                    e.target.textContent = '复制';
+                                }, 2000);
+                            });
+                    }
+                    e.stopPropagation();
+                }
+            });
+        });
+    </script>
+    <script src="../security-no-menu.js"></script>
+</body>
+
+</html>
