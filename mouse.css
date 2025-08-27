@@ -1,0 +1,183 @@
+/* 隐藏系统光标 */
+* {
+    cursor: none !important;
+}
+
+/* 自定义光标容器 */
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100000; /* 从9999提高到100000，确保高于右键菜单的99999 */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 显示光标 */
+.custom-cursor.visible {
+    opacity: 1;
+}
+
+/* 光标外层圆形 */
+.custom-cursor .cursor-outer {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 2px solid #4a90e2;
+    border-radius: 50%;
+    background-color: rgba(74, 144, 226, 0.1);
+    transform: translate(-50%, -50%);
+    transition: all 0.1s ease;
+    background-image: url('./蓝色圆润鱼鳍光标/normal.ani');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* 光标内层圆点 */
+.custom-cursor .cursor-inner {
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: 
+    width 0.2s ease,
+    height 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* 链接悬停状态 */
+.custom-cursor.link-hover .cursor-outer {
+  width: 40px;
+  height: 40px;
+  border-color: rgba(0, 100, 255, 0.5);
+}
+
+.custom-cursor.link-hover .cursor-inner {
+  background-color: #0064ff;
+}
+
+/* 文本选择状态 */
+.custom-cursor.text-hover .cursor-outer {
+  width: 4px;
+  height: 20px;
+  border-radius: 2px;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+
+.custom-cursor.text-hover .cursor-inner {
+  width: 2px;
+  height: 20px;
+  border-radius: 1px;
+  background-color: #000;
+}
+
+/* 按钮悬停状态 */
+.custom-cursor.button-hover .cursor-outer {
+  width: 35px;
+  height: 35px;
+  border-color: rgba(0, 200, 0, 0.5);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.custom-cursor.button-hover .cursor-inner {
+  background-color: #00c800;
+}
+
+/* 等待/加载状态 */
+.custom-cursor.waiting .cursor-outer {
+  border-color: rgba(255, 165, 0, 0.5);
+  animation: spin 1s linear infinite;
+}
+
+.custom-cursor.waiting .cursor-inner {
+  background-color: #ffa500;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 不可用状态 */
+.custom-cursor.unavailable .cursor-outer {
+  border-color: rgba(255, 0, 0, 0.5);
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+.custom-cursor.unavailable .cursor-inner {
+  background-color: #ff0000;
+  width: 10px;
+  height: 2px;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* 移动状态 */
+.custom-cursor.move-hover .cursor-outer {
+  border-color: rgba(100, 100, 255, 0.5);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.custom-cursor.move-hover .cursor-inner {
+  background-color: #6464ff;
+  width: 10px;
+  height: 10px;
+}
+
+/* 精度选择状态 */
+.custom-cursor.precision-hover .cursor-outer {
+  width: 20px;
+  height: 20px;
+  border-color: rgba(0, 0, 0, 0.8);
+}
+
+.custom-cursor.precision-hover .cursor-inner {
+  width: 2px;
+  height: 2px;
+  background-color: #000;
+  box-shadow: 
+    0 0 0 1px white,
+    0 0 0 2px black;
+}
+
+/* 调整大小状态 */
+.custom-cursor.resize-vertical .cursor-outer {
+  width: 15px;
+  height: 25px;
+  border-radius: 7px;
+  border-color: rgba(0, 0, 0, 0.7);
+}
+
+.custom-cursor.resize-vertical .cursor-inner {
+  width: 5px;
+  height: 15px;
+  border-radius: 2px;
+  background-color: #000;
+}
+
+.custom-cursor.resize-horizontal .cursor-outer {
+  width: 25px;
+  height: 15px;
+  border-radius: 7px;
+  border-color: rgba(0, 0, 0, 0.7);
+}
+
+.custom-cursor.resize-horizontal .cursor-inner {
+  width: 15px;
+  height: 5px;
+  border-radius: 2px;
+  background-color: #000;
+}
+
+/* 点击动画效果 */
+.custom-cursor.clicked .cursor-outer {
+  transform: translate(-50%, -50%) scale(0.8);
+  border-color: rgba(0, 0, 0, 0.9);
+}
+
+.custom-cursor.clicked .cursor-inner {
+  transform: translate(-50%, -50%) scale(0.8);
+}
