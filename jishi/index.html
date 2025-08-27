@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒计时</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="./static/img/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000000; /* 修改为纯黑背景 */
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            font-size: 10vw;
+            text-align: center;
+            overflow: hidden;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        #time {
+            font-size: 20vw;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        #message {
+            display: none;
+            font-size: 5vw;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* 按钮间距 */
+        }
+
+        button {
+            padding: 8px 12px; /* 调整内部间距 */
+            width: 60px; /* 固定按钮宽度 */
+            height: 60px; /* 固定按钮高度 */
+            background-color: #141515;
+            color: white;
+            border: none;
+            border-radius: 4.5px;
+            font-size: 16px; /* 合理的字体大小 */
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        #animated-gif {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+        }
+
+        #settings-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            width: 80%;
+            max-height: 33%;
+            overflow: auto;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        #settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index:  ;
+        }
+
+        #settings-modal label, #settings-modal h3 {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #settings-modal input, #settings-modal select {
+            font-size: 16px;
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #mute-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div id="time">02:00</div>
+    <div id="message">
+        <div>已经到时间了~~~~~~~</div>
+        <div>让我看看谁还没出教室~</div>
+    </div>
+    <img id="animated-gif" src="lp.gif" alt="Animation">
+    <div class="controls">
+        <button onclick="startTimer()">开始</button>
+        <button onclick="pauseTimer()">暂停</button>
+        <button onclick="toggleMute()">静音</button>
+        <button onclick="toggleFullScreen()">全屏</button>
+        <button onclick="showSettings()">设置</button>
+    </div>
+
+    <div id="mute-message"></div>
+
+    <div id="settings-overlay" onclick="hideSettings()"></div>
+    <div id="settings-modal">
+        <h3>设置</h3>
+        <label>倒计时时间（秒）: <input type="number" id="countdownTime" value="120"></label>
+        <label>朗读文字: <input type="text" id="speechText" value="计时开始啦啦啦啦啦啦啦。曾子墨说，不收拾书包不给放学，不收拾书包不给放学。"></label>
+        <label>主题: 
+            <select id="themeSelect" onchange="changeTheme()">
+                <option value="dark">黑暗</option>
+                <option value="light">明亮</option>
+            </select>
+        </label>
+        <button onclick="applySettings()">应用</button>
+        <button onclick="hideSettings()">关闭</button>
+    </div>
+
+    <script>
+        let countdown;
+        let running = false;
+        let remainingTime = 120;
+        let isMuted = false;
+        const gifElement = document.getElementById('animated-gif');
+        let gifEndPosition = window.innerWidth - 100;
+        let defaultSpeechText = "计时开始啦啦啦啦啦啦啦。曾子墨说，不收拾书包不给放学，不收拾书包不给放学。";
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay(seconds) {
+            const displayElement = document.getElementById('time');
+            if (seconds <= 30) {
+                displayElement.style.fontSize = '30vw';
+            }
+            displayElement.textContent = formatTime(seconds);
+
+            if (seconds === 60) {
+                gifElement.src = 'nl.gif';  
+                if (!isMuted) {
+                    const message = new SpeechSynthesisUtterance("还有一分钟哦~~~快收拾书包吧~");
+                    message.lang = 'zh-CN';
+                    message.rate = 1.5;
+                    speechSynthesis.speak(message);
+                }
+                setTimeout(() => {
+                    gifElement.src = 'lp.gif';
+                }, 5000);
+            }
+
+            if (seconds <= 3 && seconds > 0) {
+                if (!isMuted) {
+                    const sound = new Audio('https://interactive-examples.mdn.mozilla.net/media/examples/t-rex-roar.mp3');
+                    sound.play();
+                }
+            }
+            const progress = (120 - seconds) / 120; 
+            gifElement.style.left = (gifEndPosition * progress) + 'px';
+        }
+
+        function startTimer() {
+            if (running) return;
+            running = true;
+
+            const speechText = document.getElementById('speechText').value || defaultSpeechText;
+            const message = new SpeechSynthesisUtterance(speechText);
+            message.lang = 'zh-CN';
+            if (!isMuted) {
+                speechSynthesis.speak(message);
+            }
+
+            countdown = setInterval(() => {
+                if (remainingTime <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById('time').style.display = 'none';
+                    document.getElementById('message').style.display = 'block';
+                    gifElement.src = 'lpe.gif';  
+                    setTimeout(() => {
+                        window.close();
+                    }, 5000);
+                    return;
+                }
+                remainingTime--;
+                updateDisplay(remainingTime);
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            running = false;
+            clearInterval(countdown);
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const muteMessage = document.getElementById('mute-message');
+            muteMessage.textContent = isMuted ? '已静音' : '已解除静音';
+            muteMessage.style.display = 'block';
+            setTimeout(() => {
+                muteMessage.style.display = 'none';
+            }, 2000);
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function changeTheme() {
+            const theme = document.getElementById('themeSelect').value;
+            if (theme === 'light') {
+                document.body.style.backgroundColor = 'white';
+                document.body.style.color = 'black';
+            } else {
+                document.body.style.backgroundColor = 'black';
+                document.body.style.color = 'white';
+            }
+        }
+
+        function showSettings() {
+            document.getElementById('settings-overlay').style.display = 'block';
+            document.getElementById('settings-modal').style.display = 'block';
+        }
+
+        function hideSettings() {
+            document.getElementById('settings-overlay').style.display = 'none';
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        function applySettings() {
+            const countdownInput = document.getElementById('countdownTime').value;
+            remainingTime = parseInt(countdownInput, 10);
+            updateDisplay(remainingTime);
+            hideSettings();
+        }
+
+        window.addEventListener("resize", () => {
+            gifEndPosition = window.innerWidth - 100; 
+        });
+
+        updateDisplay(remainingTime);
+    </script>
+    <script src="../security.js"></script>
+</body>
+</html>
