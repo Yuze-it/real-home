@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 
 <head>
+    <link rel="stylesheet" href="../mouse.css">
     <link rel="icon" href="https://yuze.netlify.app/home/img/66f025c10699e.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +13,87 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- 引入 KaTeX 支持 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool'></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 添加marked加载失败备用方案 -->
+    <script>
+        // 检查marked是否成功加载，如果没有，尝试使用备用CDN
+        if (typeof marked === 'undefined') {
+            console.warn('主marked CDN加载失败，尝试备用CDN...');
+            const backupScript = document.createElement('script');
+            backupScript.src = 'https://unpkg.com/marked/marked.min.js';
+            backupScript.onload = function() {
+                console.log('备用marked CDN加载成功');
+            };
+            backupScript.onerror = function() {
+                console.error('所有marked CDN加载失败');
+            };
+            document.head.appendChild(backupScript);
+        }
+
+        // 处理折叠框语法的预处理函数
+function preprocessCollapsibleBlocks(md) {
+    // 定义不同类型折叠框的样式类名
+    const blockTypes = {
+        'info': 'collapsible-info',
+        'success': 'collapsible-success',
+        'warning': 'collapsible-warning',
+        'error': 'collapsible-error'
+    };
+
+    // 支持嵌套折叠框，最深层是3个冒号，向外每层增加一个冒号
+    let result = md;
+    
+    // 处理从外层到内层的折叠框
+    for (let depth = 10; depth >= 3; depth--) {
+        const startColons = ':'.repeat(depth);
+        const endColons = ':'.repeat(depth);
+        
+        // 正则表达式匹配折叠框语法
+        const regex = new RegExp(`${startColons}\\s*(\\w+)\\s*\\[(.*?)\\]\\s*(\\{(open)\\})?\\s*\\n([\\s\\S]*?)\\n\\s*${endColons}`, 'g');
+        
+        result = result.replace(regex, (match, type, title, openFlag, openValue, content) => {
+            // 获取对应的样式类名
+            const typeClass = blockTypes[type] || blockTypes['info'];
+            // 检查是否默认展开
+            const isOpen = openFlag === '{open}';
+            // 生成唯一ID用于折叠框
+            const blockId = `collapsible-${Math.random().toString(36).substr(2, 9)}`;
+            // 生成内容容器ID
+            const contentId = `collapsible-content-${blockId}`;
+            
+            // 返回HTML结构，为内容添加ID以便后续处理
+            return `
+<div class="collapsible-container ${typeClass}">
+    <div class="collapsible-header" onclick="toggleCollapsible('${blockId}')">
+        <span class="collapsible-icon">${isOpen ? '−' : '+'}</span>
+        <span class="collapsible-title">${title}</span>
+    </div>
+    <div id="${blockId}" class="collapsible-content" data-content-id="${contentId}" style="display: ${isOpen ? 'block' : 'none'}">
+        <div id="${contentId}" class="collapsible-content-markdown">${content}</div>
+    </div>
+</div>
+`;
+        });
+    }
+    
+    return result;
+}
+
+// 折叠框切换函数
+function toggleCollapsible(id) {
+    const content = document.getElementById(id);
+    const icon = content.previousElementSibling.querySelector('.collapsible-icon');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.textContent = '−';
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '+';
+    }
+}
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
@@ -30,6 +110,124 @@
             --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             --radial-gradient: radial-gradient(circle at top right, #ff9a9e, #a0d9f6);
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* 折叠框颜色变量 */
+            --collapsible-info-bg: rgba(160, 217, 246, 0.1);
+            --collapsible-info-border: #a0d9f6;
+            --collapsible-success-bg: rgba(46, 204, 113, 0.1);
+            --collapsible-success-border: #2ecc71;
+            --collapsible-warning-bg: rgba(241, 196, 15, 0.1);
+            --collapsible-warning-border: #f1c40f;
+            --collapsible-error-bg: rgba(231, 76, 60, 0.1);
+            --collapsible-error-border: #e74c3c;
+        }
+
+        /* 折叠框样式 */
+        .collapsible-container {
+            margin: 1.5em 0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .collapsible-header {
+            padding: 0.8em 1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            transition: var(--transition);
+            user-select: none;
+        }
+        
+        .collapsible-header:hover {
+            opacity: 0.9;
+        }
+        
+        .collapsible-icon {
+            font-size: 1.2em;
+            font-weight: bold;
+            width: 1.2em;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .collapsible-content {
+            padding: 1em;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 不同类型折叠框的样式 */
+        .collapsible-info {
+            border: 1px solid var(--collapsible-info-border);
+            background: var(--collapsible-info-bg);
+        }
+        
+        .collapsible-info .collapsible-header {
+            background: linear-gradient(135deg, rgba(160, 217, 246, 0.3), rgba(160, 217, 246, 0.1));
+            color: #2980b9;
+        }
+        
+        .collapsible-success {
+            border: 1px solid var(--collapsible-success-border);
+            background: var(--collapsible-success-bg);
+        }
+        
+        .collapsible-success .collapsible-header {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(46, 204, 113, 0.1));
+            color: #27ae60;
+        }
+        
+        .collapsible-warning {
+            border: 1px solid var(--collapsible-warning-border);
+            background: var(--collapsible-warning-bg);
+        }
+        
+        .collapsible-warning .collapsible-header {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(241, 196, 15, 0.1));
+            color: #f39c12;
+        }
+        
+        .collapsible-error {
+            border: 1px solid var(--collapsible-error-border);
+            background: var(--collapsible-error-bg);
+        }
+        
+        .collapsible-error .collapsible-header {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(231, 76, 60, 0.1));
+            color: #c0392b;
+        }
+
+        /* 夜间模式下折叠框样式 */
+        body.dark-mode .collapsible-container {
+            border: 1px solid rgba(127, 215, 255, 0.2);
+        }
+        
+        body.dark-mode .collapsible-content {
+            background: rgba(35, 39, 47, 0.8);
+            border-top-color: rgba(127, 215, 255, 0.1);
+        }
+        
+        body.dark-mode .collapsible-info .collapsible-header {
+            background: linear-gradient(135deg, rgba(160, 217, 246, 0.15), rgba(160, 217, 246, 0.05));
+            color: #7fd7ff;
+        }
+        
+        body.dark-mode .collapsible-success .collapsible-header {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.05));
+            color: #52e694;
+        }
+        
+        body.dark-mode .collapsible-warning .collapsible-header {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.15), rgba(241, 196, 15, 0.05));
+            color: #f8d26a;
+        }
+        
+        body.dark-mode .collapsible-error .collapsible-header {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(231, 76, 60, 0.05));
+            color: #ff8a80;
         }
 
         /* 基础样式 */
@@ -498,15 +696,15 @@
             opacity: 0.85;
             transition: background 0.2s, opacity 0.2s;
             z-index: 2;
+            display: none;
+        }
+
+        #article-content pre:hover .copy-btn {
+            display: block;
         }
 
         .copy-btn:hover {
             background: var(--primary-color);
-            opacity: 1;
-        }
-
-        /* 让按钮在代码块悬停时显示 */
-        #article-content pre:hover .copy-btn {
             opacity: 1;
         }
 
@@ -928,11 +1126,58 @@
             transform: scale(1.04);
         }
 
-        /* ...existing code... */
+        /* 数学公式样式 */
+        .math-block {
+            display: block;
+            overflow-x: auto;
+            margin: 1em 0;
+            text-align: center;
+        }
+
+        .math-inline {
+            display: inline-block;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        .loading div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .loading div::after {
+            content: '';
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
 <body>
+    <!-- 自定义鼠标指针 -->
+    <div id="custom-cursor" class="custom-cursor">
+        <div class="cursor-inner"></div>
+        <div class="cursor-outer"></div>
+    </div>
+    <!-- 引入鼠标指针脚本 -->
+    <script src="../mouse.js"></script>
     <!-- 顶部导航栏 -->
     <nav class="top-nav">
         <div class="nav-container">
@@ -966,6 +1211,51 @@
                 <h2>欢迎阅读我的博客</h2>
                 <p>请从右侧选择一篇文章开始阅读。这里分享了我的技术学习心得、生活感悟以及个人成长经历。希望你能找到对你有价值的内容。</p>
                 <p>如果你喜欢我的文章，欢迎通过页面底部的链接联系我，或者分享给你的朋友们。</p>
+                
+                <!-- 折叠框示例 -->
+                <h3>折叠框功能演示</h3>
+                <p>以下是一些折叠框示例，展示博客支持的折叠框功能：</p>
+                
+                <div class="collapsible-container collapsible-info">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-info')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">信息折叠框</span>
+                    </div>
+                    <div id="demo-info" class="collapsible-content" style="display: none;">
+                        <p>这是一个信息类型的折叠框，用于展示一般信息内容。</p>
+                        <p>点击标题可以展开或折叠内容。</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-container collapsible-success">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-success')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">成功折叠框</span>
+                    </div>
+                    <div id="demo-success" class="collapsible-content" style="display: none;">
+                        <p>这是一个成功类型的折叠框，用于展示成功或积极的内容。</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-container collapsible-warning">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-warning')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">警告折叠框</span>
+                    </div>
+                    <div id="demo-warning" class="collapsible-content" style="display: none;">
+                        <p>这是一个警告类型的折叠框，用于展示需要注意的内容。</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-container collapsible-error">
+                    <div class="collapsible-header" onclick="toggleCollapsible('demo-error')">
+                        <span class="collapsible-icon">+</span>
+                        <span class="collapsible-title">错误折叠框</span>
+                    </div>
+                    <div id="demo-error" class="collapsible-content" style="display: none;">
+                        <p>这是一个错误类型的折叠框，用于展示错误或危险的内容。</p>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -1285,17 +1575,7 @@
                     const btn = document.createElement('button');
                     btn.className = 'copy-btn';
                     btn.textContent = '复制';
-                    btn.onclick = function (e) {
-                        e.stopPropagation();
-                        navigator.clipboard.writeText(codeBlock.textContent).then(() => {
-                            btn.textContent = '已复制';
-                            btn.classList.add('copied');
-                            setTimeout(() => {
-                                btn.textContent = '复制';
-                                btn.classList.remove('copied');
-                            }, 2000);
-                        });
-                    };
+                    // 移除直接绑定的onclick事件
                     codeBlock.parentElement.insertBefore(btn, codeBlock);
                 });
                 // 代码块高亮
@@ -1314,22 +1594,81 @@
                         return res.text();
                     })
                     .then(md => {
-                        articleContent.innerHTML = marked.parse(md);
-                        renderMathInElement(articleContent);
-                        enhanceMarkdown(articleContent);
-                        // 脚注跳转支持
-                        articleContent.querySelectorAll('sup.footnote-ref a').forEach(a => {
-                            a.onclick = function(e) {
-                                e.preventDefault();
-                                const href = a.getAttribute('href');
-                                const target = articleContent.querySelector(href);
-                                if (target) target.scrollIntoView({behavior: "smooth"});
-                            };
-                        });
+                        // 检查marked库是否可用，添加fallback机制
+                        try {
+                            if (typeof marked !== 'undefined') {
+                                // 预处理Markdown内容，处理折叠框语法
+                                const processedMd = preprocessCollapsibleBlocks(md);
+                                articleContent.innerHTML = marked.parse(processedMd);
+                                renderMathInElement(articleContent);
+                                enhanceMarkdown(articleContent);
+                                // 脚注跳转支持
+                                articleContent.querySelectorAll('sup.footnote-ref a').forEach(a => {
+                                    a.onclick = function(e) {
+                                        e.preventDefault();
+                                        const href = a.getAttribute('href');
+                                        const target = articleContent.querySelector(href);
+                                        if (target) target.scrollIntoView({behavior: "smooth"});
+                                    };
+                                });
+                                
+                                // 对折叠框标题进行完整Markdown渲染
+                                articleContent.querySelectorAll('.collapsible-title').forEach(title => {
+                                    // 保存原始标题文本
+                                    const originalTitle = title.textContent;
+                                    // 对标题文本进行Markdown解析和渲染
+                                    try {
+                                        const renderedTitle = marked.parseInline(originalTitle);
+                                        title.innerHTML = renderedTitle;
+                                        // 对标题中的数学公式进行渲染
+                                        renderMathInElement(title);
+                                    } catch (error) {
+                                        console.error('标题Markdown渲染错误:', error);
+                                        // 如果渲染失败，至少确保数学公式能正常显示
+                                        renderMathInElement(title);
+                                    }
+                                });
+                                 
+                                // 添加折叠框内容Markdown渲染
+                                articleContent.querySelectorAll('.collapsible-content-markdown').forEach(contentDiv => {
+                                    try {
+                                        // 获取原始内容文本
+                                        const originalContent = contentDiv.textContent;
+                                        // 对内容进行Markdown解析和渲染
+                                        const renderedContent = marked.parse(originalContent);
+                                        contentDiv.innerHTML = renderedContent;
+                                        // 在内容上渲染数学公式
+                                        renderMathInElement(contentDiv);
+                                        // 增强内容中的代码块
+                                        enhanceMarkdown(contentDiv);
+                                    } catch (error) {
+                                        console.error('折叠框内容Markdown渲染错误:', error);
+                                    }
+                                });
+                            } else {
+                                // 当marked不可用时，使用简单的文本显示作为后备
+                                articleContent.innerHTML = `
+                                    <div style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px;">
+                                        <p style="font-weight: bold;">提示：此字段渲染库未能加载，以下是原始内容：</p>
+                                    </div>
+                                    <pre style="white-space: pre-wrap; word-break: break-word; background-color: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #dee2e6;">${escapeHtml(md)}</pre>
+                                `;
+                            }
+                        } catch (error) {
+                            console.error('Markdown渲染错误:', error);
+                            articleContent.innerHTML = `<p>文章渲染失败：${error.message}</p>`;
+                        }
                     })
                     .catch(err => {
                         articleContent.innerHTML = `<p>无法加载文章内容：${err.message}</p>`;
                     });
+            }
+
+            // HTML转义函数，用于安全显示原始文本
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
 
             // 添加抖动动画关键帧
@@ -1342,8 +1681,35 @@
         }
     `;
             document.head.appendChild(style);
+
+            // 添加复制按钮事件委托
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('copy-btn')) {
+                    const codeBlock = e.target.nextElementSibling;
+                    if (codeBlock && codeBlock.tagName === 'CODE') {
+                        navigator.clipboard.writeText(codeBlock.textContent)
+                            .then(() => {
+                                e.target.textContent = '已复制';
+                                e.target.classList.add('copied');
+                                setTimeout(() => {
+                                    e.target.textContent = '复制';
+                                    e.target.classList.remove('copied');
+                                }, 2000);
+                            })
+                            .catch(err => {
+                                console.error('复制失败:', err);
+                                e.target.textContent = '复制失败';
+                                setTimeout(() => {
+                                    e.target.textContent = '复制';
+                                }, 2000);
+                            });
+                    }
+                    e.stopPropagation();
+                }
+            });
         });
     </script>
+    <script src="../security-no-menu.js"></script>
 </body>
 
 </html>
